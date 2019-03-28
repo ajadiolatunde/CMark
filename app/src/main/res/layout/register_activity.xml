@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="match_parent"
+                android:id="@+id/imgv_pic"
+                android:src="@drawable/ic_photo_camera_black_24dp"
+
+                android:layout_margin="20dp"
+                android:layout_height="200dp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/useriddd"
+                android:hint="Id"
+                android:inputType="number"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/fname"
+                android:hint="Firsname"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/mname"
+                android:hint="Middle name"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/lname"
+                android:hint="Lastname"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:layout_width="match_parent"
+                android:id="@+id/dob"
+                android:hint="Date of birth (ddmmyyyy)"
+                android:layout_margin="5dp"
+                android:layout_height="wrap_content" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_margin="5dp"
+                android:background="@drawable/myfirst"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:text="Gender"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:id="@+id/gender_spinner"
+                    android:spinnerMode="dialog"
+                    android:layout_weight="1"
+                    android:entries="@array/spinnergender"
+                    android:layout_height="wrap_content"></Spinner>
+
+            </LinearLayout>
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:id="@+id/submitbtn"
+                android:background="@drawable/myfirst"
+                android:layout_gravity="center"
+                android:text="submit"
+                android:layout_height="wrap_content" />
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

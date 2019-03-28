@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CMark</string>
+    <string-array name="spinnergender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+</resources>
