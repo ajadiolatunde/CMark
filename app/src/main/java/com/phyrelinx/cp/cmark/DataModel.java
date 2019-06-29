@@ -6,7 +6,15 @@ public class DataModel implements Serializable{
 
     String fname,mname,lname;
     String id,group,gender,dob;
-    String profession,address,phone;
+    String profession,address,phone,teacherID;
+
+    public String getTeacherID() {
+        return teacherID;
+    }
+
+    public void setTeacherID(String teacherID) {
+        this.teacherID = teacherID;
+    }
 
     public String getAddress() {
         return address;
@@ -89,23 +97,50 @@ public class DataModel implements Serializable{
     }
 
 
-    public DataModel(String fname, String mname, String lname, String id, String gender) {
+    public DataModel(String fname, String mname, String lname, String id, String gender,String dob,String phone,String teacherID) {
         this.fname = fname;
         this.mname = mname;
         this.lname = lname;
-        this.group = group;
         this.id = id;
         this.gender = gender;
+        this.dob = dob;
+        this.phone = phone;
+        this.teacherID =teacherID;
 
 
     }
     @Override
     public String toString(){
+
         return this.id+" "+this.group+" "+this.fname+" "+this.mname+" "+this.lname;
+        //return this.fname+" "+this.mname+" "+this.lname;
+
     }
     public String getName(){
         return this.id+" "+this.fname+" "+this.mname+" "+this.lname;
 
+    }
+
+    public String toServer(){
+                                String dt = new StringBuilder()
+                                .append(id)
+                                .append("#")
+                                .append(this.fname)
+                                .append("#")
+                                .append(this.mname)
+                                .append("#")
+                                .append(this.lname)
+                                .append("#")
+                                .append(this.dob)
+                                .append("#")
+                                .append(this.gender)
+                                .append("#")
+                                .append(this.phone)
+                                .append("#")
+                                .append(this.teacherID)
+                                .toString();
+
+                                return dt;
     }
 
 
