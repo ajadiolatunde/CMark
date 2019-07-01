@@ -112,7 +112,7 @@ public class DataModel implements Serializable{
     @Override
     public String toString(){
 
-        return this.id+" "+this.group+" "+this.fname+" "+this.mname+" "+this.lname;
+        return this.id+" "+this.phone+" "+this.fname+" "+this.mname+" "+this.lname;
         //return this.fname+" "+this.mname+" "+this.lname;
 
     }

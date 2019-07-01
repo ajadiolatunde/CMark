@@ -35,7 +35,7 @@ public class Register extends AppCompatActivity {
     Uri photofile;
     ImageView imVCature_pic;
     Button submit;
-    EditText firstname,middlename ,lastname,useridedit;
+    EditText firstname,middlename ,lastname,useridedit,phoneEdit,dobEdit;
     Spinner gender,groupquad;
     File file;
     File filedir;
@@ -44,15 +44,36 @@ public class Register extends AppCompatActivity {
     ArrayList<String> sft;
     Boolean editmode = false;
     DataModel model;
+    Singleton1 singleton1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
+        singleton1 = Singleton1.getInstance(getApplicationContext());
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.containsKey("id")) {
+                id = extras.getString("id");
+                model=(DataModel) intent.getSerializableExtra("serial");
+                System.out.println("Tunde serial "+model.toString());
+
+                editmode = true;
+                // TODO: Do something with the value of isNew.
+            }else{
+                editmode = false;
+            }
+        }else {
+            System.out.println("Tunde extra is null "+editmode);
+
+        }
         System.out.println("Tunde extra is "+editmode);
         useridedit = (EditText)findViewById(R.id.useriddd);
+        useridedit.setText((singleton1.getUnit()+String.valueOf(System.currentTimeMillis())));
+        useridedit.setEnabled(false);
+        phoneEdit = (EditText)findViewById(R.id.phoneNumber);
+        dobEdit = (EditText)findViewById(R.id.dobed);
         firstname = (EditText)findViewById(R.id.fname);
         middlename = (EditText)findViewById(R.id.mname);
         lastname = (EditText)findViewById(R.id.lname);
@@ -62,6 +83,34 @@ public class Register extends AppCompatActivity {
         ArrayAdapter<String> sadapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_spinner_item,sft);
         sadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         imVCature_pic =(ImageView)findViewById(R.id.imgv_pic);
+        if (editmode){
+            useridedit.setText(id);
+            useridedit.setEnabled(false);
+            firstname.setText(model.getFname());
+            lastname.setText(model.getLname());
+            middlename.setText(model.getMname());
+            phoneEdit.setText(model.getPhone());
+            dobEdit.setText(model.getDob());
+            String[] sex = getResources().getStringArray(R.array.spinnergender);
+//            for (String s:sex){
+//                if (s.equals(model.getGender())){
+//                    gender.setSelection(sex);
+//                }
+//            }
+
+
+            filedir = new File(getFilesDir(), Constants.PHOTODIRR);
+
+            File f = new File(filedir.toString(), id + ".jpg");
+
+
+            Glide.with(Register.this)
+                    .load(f.toString())
+                    .apply(new RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true))
+                    .into(imVCature_pic);
+        }
 
 
         submit = (Button)findViewById(R.id.submitbtn);
@@ -72,32 +121,36 @@ public class Register extends AppCompatActivity {
                 if (ispicready){
                     imVCature_pic.setEnabled(false);
                     boolean sready = false;
-                    String fn =firstname.getText().toString();
-                    String ln = lastname.getText().toString();
-                    String mn = middlename.getText().toString();
+                    final String fn =firstname.getText().toString();
+                    final String ln = lastname.getText().toString();
+                    final String mn = middlename.getText().toString();
+                    final String phone = phoneEdit.getText().toString();
+                    final String dob = dobEdit.getText().toString();
 
-                    String  gen = (String) gender.getSelectedItem();
+                    final String  gen = (String) gender.getSelectedItem();
+
                     if (fn.length()<2){
                         firstname.setError("Firstname required");
 
                     }else if (ln.length()<3){
                         lastname.setError("lastname required");
+                    } if (mn.length()<3){
+                        middlename.setError("middlename required");
+                    }  if (phone.length()<11){
+                        phoneEdit.setError("Invalid phone number!");
                     }else {
                         sready = true;
                     }
 
                    if (sready) {
-                       new Jasonparse(getBaseContext()).register(id,fn,mn,ln,gen);
-                       submit.setEnabled(false);
-                       try {
-                           TimeUnit.SECONDS.sleep(2);
-                           Intent intent= new Intent(Register.this,MainActivity.class);
-                           startActivity(intent);
-                           finish();
 
-                       }catch (InterruptedException io){
+                       Toast.makeText(getBaseContext(),"Saved",Toast.LENGTH_SHORT).show();
+                       new Jasonparse(getBaseContext()).register(id,fn,mn,ln,dob,gen,phone,singleton1.getStaff(),"0");
+                       Intent intent = new Intent(Register.this,MainActivity.class);
+                       startActivity(intent);
+                       finish();
 
-                       }
+
                    }
 
                 }else{
@@ -143,7 +196,7 @@ public class Register extends AppCompatActivity {
                 System.out.println("Tunde id is "+id+"  len " +id.length());
 
                 if (id.length()>0) {
-                    boolean cantakeattendance  = new Jasonparse(getBaseContext()).canTakeAttendance(id);
+                    boolean cantakeattendance  = new Jasonparse(getBaseContext()).canRegister(id);
                     if (editmode){
                         cantakeattendance = false;
                     }
@@ -216,7 +269,8 @@ public class Register extends AppCompatActivity {
                 Bitmap thePic = extras.getParcelable("data");
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 thePic.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File f = new File(filedir.toString(), id + ".jpg");
+                //-----------------------------------------------------------------------------------------------------------
+                File f = new File(filedir.toString(), id + "");
                 try {
                     f.createNewFile();
                     FileOutputStream fo = new FileOutputStream(f);

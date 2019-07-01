@@ -3,6 +3,7 @@ package com.phyrelinx.cp.cmark;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.view.View;
 
 import java.io.File;
@@ -20,12 +21,13 @@ class Singleton1 {
     String userDetails ="";
     String count="0";
     String id;
+    Tag tagtochange;
     String fnameforscan,lnameforscan;
     ArrayList<NameId> nameidList;
     String staff,pass;
     Boolean canedit =false;
 
-    String server,port,organisation,pin;
+    String server,port,organisation,pin,unit,staffname;
 
 
 
@@ -206,7 +208,21 @@ class Singleton1 {
 
     }
 
+    public String getUnit() {
+        return unit;
+    }
 
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getStaffname() {
+        return staffname;
+    }
+
+    public void setStaffname(String staffname) {
+        this.staffname = staffname;
+    }
 
     public String getPort() {
         return port;
@@ -241,6 +257,14 @@ class Singleton1 {
         }
     }
 
+    public Tag getTagtochange() {
+        return tagtochange;
+    }
+
+    public void setTagtochange(Tag tagtochange) {
+        this.tagtochange = tagtochange;
+    }
+
     public String getStaff() {
         return staff;
     }
@@ -273,11 +297,11 @@ class Singleton1 {
     }
     //Get name of id from list
 
-    public String getNameidList(int id) {
+    public String getNameidList(String id) {
         String name ="Deleted! ";
         for(int i=0;i<nameidList.size();i++){
             NameId nid = nameidList.get(i);
-            if (nid.getId()==id){
+            if (nid.getId().equals(id)){
                 name = nid.getName();
                 break;
             }
@@ -287,6 +311,15 @@ class Singleton1 {
 
     public void setNameidList() {
         this.nameidList = new Jasonparse(context).buildNamefromid();
+    }
+
+    public File getPhotoFile(String name){
+        File externalFileDir = new File(context.getFilesDir(),Constants.MAPPHOTODIRR);
+        if (!externalFileDir.exists())externalFileDir.mkdir();
+//        if(externalFileDir == null){
+//            return null;
+//        }
+        return  new File(externalFileDir.toString(),name);
     }
 
 

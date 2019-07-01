@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@drawable/myfirst"
+    android:background="@color/colorAccent"
     android:orientation="vertical"
     android:padding="3dp">
 
@@ -14,18 +14,19 @@
         android:layout_alignParentTop="true"
         android:text="Marshmallow"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="@color/white" />
 
 
 
     <TextView
-        android:id="@+id/grouptxt"
+        android:id="@+id/upload_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/name"
         android:layout_marginTop="15dp"
-        android:text="Android 6.0"
-        android:textColor="@color/colorPrimary" />
+        android:drawableLeft="@drawable/ic_file_upload_black_24dp"
+        android:text="Upload "
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/fingerenrolimg"
@@ -52,15 +53,10 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerInParent="true">
 
-        <TextView
-            android:id="@+id/fingerEnroltxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=": "
-            android:textColor="@android:color/black"
-            android:textStyle="bold" />
+
 
 
     </LinearLayout>

@@ -2,8 +2,8 @@ package com.phyrelinx.cp.cmark;
 
 public class NameId {
     String name;
-    int id;
-    public NameId(int id, String name){
+    String id;
+    public NameId(String id, String name){
         this.id = id;
         this.name = name;
 
@@ -17,11 +17,11 @@ public class NameId {
         this.name = name;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

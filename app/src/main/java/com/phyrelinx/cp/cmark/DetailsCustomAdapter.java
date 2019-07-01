@@ -96,7 +96,7 @@ public class DetailsCustomAdapter extends ArrayAdapter<String> implements View.O
 
 
 
-        viewHolder.txtName.setText(singleton1.getNameidList(Integer.parseInt(datas[0])));
+        viewHolder.txtName.setText(singleton1.getNameidList(datas[0]));
         viewHolder.txtName.setTag(position);
 
         if (tt.length==5) {

@@ -1,6 +1,7 @@
 package com.phyrelinx.cp.cmark;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
@@ -25,12 +26,28 @@ public class Markattendance extends AppCompatActivity {
     ImageView nfcimg;
     Singleton1 singleton1;
     String cut,previous;
+    DataModel model;
+    String id;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.markattendance);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            if (extras.containsKey("id")) {
+                id = extras.getString("id");
+                if (!id.equals(Constants.SKIP))model=(DataModel) intent.getSerializableExtra("serial");
+
+            }else{
+
+            }
+        }else {
+
+
+        }
         previous=" ";
         nfcedit = (EditText)findViewById(R.id.edit_id);
         nfcuser = (TextView)findViewById(R.id.mark_id);
@@ -63,10 +80,10 @@ public class Markattendance extends AppCompatActivity {
                         toneDisplay(getBaseContext(), ch);
                         if (new Jasonparse(getBaseContext()).canTakeAttendance(ch)) {
                             System.out.println("Tunde "+singleton1.getUserDetails());
-                            new Jasonparse(getBaseContext()).markAttendnance(ch);
+                            new Jasonparse(getBaseContext()).markAttendnance(ch,"");
                             File filedir = new File(getFilesDir(), Constants.PHOTODIRR);
                             File f = new File(filedir.toString(), ch + ".jpg");
-                            nfcuser.setText(singleton1.getNameidList(Integer.parseInt(ch)));
+                            nfcuser.setText(singleton1.getNameidList(ch));
 
                             Glide.with(Markattendance.this)
                                     .load(f.toString())

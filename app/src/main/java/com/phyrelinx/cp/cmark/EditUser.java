@@ -51,10 +51,10 @@ public class EditUser extends AppCompatActivity {
         ft = new ArrayList<>();
         sft = new ArrayList<>();
         //load data here   id name group
-        new Jasonparse(getBaseContext()).loadDatatoList(ft);
+        new Jasonparse(getBaseContext()).loadDatatoList(Constants.REGISTER,ft);
         cttxt.setText(String.valueOf(ft.size()));
         //adapter = new ArrayAdapter(EditUser.this, android.R.layout.simple_list_item_1, ft);
-        adapter = new CustomAdapter(ft,sft,EditUser.this);
+        adapter = new EdituserCustomAdapter(Constants.REGISTER,ft,sft,EditUser.this,EditUser.this);
         listView.setAdapter(adapter);
 
     }
@@ -62,7 +62,7 @@ public class EditUser extends AppCompatActivity {
     public void filter(String text){
         String ctext = text.toLowerCase(Locale.getDefault());
         ArrayList<DataModel> lt =new ArrayList<>();
-        new Jasonparse(getBaseContext()).loadDatatoList(lt);
+        new Jasonparse(getBaseContext()).loadDatatoList(Constants.REGISTER,lt);
 
 
         if (ctext.length()==0){

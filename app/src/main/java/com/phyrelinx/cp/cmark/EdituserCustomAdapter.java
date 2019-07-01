@@ -1,6 +1,7 @@
 package com.phyrelinx.cp.cmark;
 //https://www.journaldev.com/10416/android-listview-with-custom-adapter-example-tutorial
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,25 +12,24 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
-public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
+public class EdituserCustomAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener{
 
     private ArrayList<DataModel> dataSet;
     Context mContext;
     ArrayList<String> grouplist;
-    CustomAdapter adapter;
+    EdituserCustomAdapter adapter;
+    String table;
+    Activity activity;
     Singleton1 singleton1 = Singleton1.getInstance(getContext());
 
     // View lookup cache
@@ -37,15 +37,16 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
         TextView txtName;
         TextView txtGroup;
         TextView txtDelete;
-        TextView txtVersion;
-        ImageView fingerenrol;
+        TextView txtUpload;
     }
 
-    public CustomAdapter(ArrayList<DataModel> data, ArrayList<String> sft, Context context) {
+    public EdituserCustomAdapter(String table, ArrayList<DataModel> data, ArrayList<String> sft, Context context, Activity activity) {
         super(context, R.layout.row_item, data);
         this.dataSet = data;
         this.mContext=context;
         this.grouplist = sft;
+        this.table = table;
+        this.activity = activity;
         adapter = this;
 
     }
@@ -59,6 +60,39 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
 
         switch (v.getId())
         {
+
+            case R.id.upload_txt:
+                String data = new Gson().toJson(dataModel,DataModel.class);
+                System.out.println("Tunde gson "+data);
+
+                TrackAsync async = new TrackAsync(dataModel.getId(),Constants.HTTP_URL_DATA,dataModel.toServer(),activity,new AsynTaskCallback(){
+                    @Override
+                    public void processFinish(String str) {
+                        final String bf =str;
+                        if (bf.contains("success")){
+                            Toast.makeText(getContext(),"Uploaded",Toast.LENGTH_SHORT).show();
+                            new Jasonparse(getContext()).deleteAccount(dataModel.getId());
+                            new Jasonparse(getContext()).loadDatatoList(Constants.REGISTER,dataSet);
+
+
+                            adapter.notifyDataSetChanged();
+                            File filedir = new File(getContext().getFilesDir(), Constants.PHOTODIRR);
+                            File file  = new File(filedir.toString(), dataModel.getId() + ".jpg");
+                            File file1  = new File(filedir.toString(), dataModel.getId());
+
+                            if (file.exists())file.delete();
+                            if (file1.exists())   file1.delete();
+                            //STatus for send
+
+                        }else {
+                            Toast.makeText(getContext(),bf,Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+                });
+                async.execute();
+                break;
             case R.id.deletetxt:
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
@@ -66,7 +100,7 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
                                 new Jasonparse(getContext()).deleteAccount(dataModel.getId());
-                                new Jasonparse(getContext()).loadDatatoList(dataSet);
+                                new Jasonparse(getContext()).loadDatatoList(table,dataSet);
                                 Toast.makeText(mContext,dataModel.getName()+" deleted", Toast.LENGTH_SHORT).show();
 
                                 adapter.notifyDataSetChanged();
@@ -94,24 +128,13 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
                 intentedit.putExtra("id",dataModel.getId());
                 intentedit.putExtra("serial",dataModel);
                 getContext().startActivity(intentedit);
-
-
-
-
+                activity.finish();
 
 //                Snackbar.make(v, dataModel.getId(), Snackbar.LENGTH_LONG)
 //                        .setAction("No action", null).show();
                 break;
 
-            case R.id.fingerenrolimg:
-                Intent intent = new Intent(getContext(),MainActivity.class);
-                intent.putExtra("id",dataModel.getId());
-                intent.putExtra("fname",dataModel.getFname());
-                intent.putExtra("lname",dataModel.getLname());
-                intent.putExtra(Constants.ATTENDANCETYPE,Constants.REG);
 
-                getContext().startActivity(intent);
-                break;
 
         }
     }
@@ -133,10 +156,10 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.row_item, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.txtGroup = (TextView) convertView.findViewById(R.id.grouptxt);
             viewHolder.txtDelete = (TextView) convertView.findViewById(R.id.deletetxt);
+            viewHolder.txtUpload = (TextView) convertView.findViewById(R.id.upload_txt);
 
-            viewHolder.fingerenrol = (ImageView) convertView.findViewById(R.id.fingerenrolimg);
+
 
             result=convertView;
 
@@ -157,11 +180,11 @@ public class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnCli
         viewHolder.txtDelete.setOnClickListener(this);
         viewHolder.txtDelete.setTag(position);
 
-        viewHolder.txtGroup.setText(dataModel.getGroup());
-        viewHolder.txtGroup.setOnClickListener(this);
-        viewHolder.txtGroup.setTag(position);
-        viewHolder.fingerenrol.setOnClickListener(this);
-        viewHolder.fingerenrol.setTag(position);
+        viewHolder.txtUpload.setOnClickListener(this);
+        viewHolder.txtUpload.setTag(position);
+
+
+
         // Return the completed view to render on screen
         return convertView;
     }

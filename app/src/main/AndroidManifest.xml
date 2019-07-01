@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <uses-feature android:name="android.hardware.usb.host" />
 
     <application
@@ -26,7 +27,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity"  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,17 +35,37 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Register">
+        <activity android:name=".MainActivity"  android:screenOrientation="portrait">
 
         </activity>
 
-        <activity android:name=".Report">
+        <activity android:name=".Register"  android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".Markattendance">
+        <activity android:name=".ManageUser"  android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".EditUser">
+        <activity android:name=".Qrcodedetect"  android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".Report"  android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".Markattendance"  android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".EditUser"  android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".ViewAttendance"  android:screenOrientation="portrait">
+
+        </activity>
+
+        <activity android:name=".Qrcheckout"  android:screenOrientation="portrait">
+
+        </activity>
+        <activity android:name=".QrToilet"  android:screenOrientation="portrait">
 
         </activity>
     </application>

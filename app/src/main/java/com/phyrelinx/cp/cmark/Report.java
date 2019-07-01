@@ -1,5 +1,6 @@
 package com.phyrelinx.cp.cmark;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class Report extends AppCompatActivity {
     ListView listView;
-    ToolsCustomAdapter toolsCustomAdapter;
+    AllEventsCustomAdapter toolsCustomAdapter;
     Singleton1 singleton1;
 
     @Override
@@ -17,11 +18,20 @@ public class Report extends AppCompatActivity {
         setContentView(R.layout.report);
         listView = (ListView)findViewById(R.id.report_listview);
         final ArrayList<Event> arrayList=new ArrayList<>();
-        toolsCustomAdapter = new ToolsCustomAdapter(arrayList,Report.this,Report.this);
+        toolsCustomAdapter = new AllEventsCustomAdapter(arrayList,Report.this,Report.this);
         listView.setAdapter(toolsCustomAdapter);
         new Jasonparse(getBaseContext()).getAllevent(arrayList,toolsCustomAdapter);
         singleton1 = Singleton1.getInstance(getBaseContext());
         singleton1.setNameidList();
 
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent=new Intent(Report.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+        // Otherwise defer to system default behavior.
+        // super.onBackPressed();
     }
 }

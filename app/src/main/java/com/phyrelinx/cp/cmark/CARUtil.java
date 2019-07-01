@@ -50,8 +50,11 @@ public class CARUtil {
         Timestamp timestamp =new Timestamp( l);
         String[] tNumber = timestamp.toLocaleString().split(" ")[3].split(":");
         int pass =Integer.parseInt( tNumber[1]+tNumber[0]);
-        return String.valueOf(pass+48);
+        return String.valueOf(pass);
     }
+
+
+
     public static String getToday(){
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         System.out.println("Timestamp  "+timestamp.toString());

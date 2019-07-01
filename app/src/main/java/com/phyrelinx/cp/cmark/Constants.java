@@ -3,13 +3,24 @@ package com.phyrelinx.cp.cmark;
 public class Constants {
     Singleton1 singleton1 ;
     public static String PHOTODIRR="pics";
+    public static String MAPPHOTODIRR="mappics";
+
     public static String CLOSE="N";
     public static String MYPREF ="mypref";
+
+    public static String SKIP ="0000";
 
 
     //TABLES
     public static String ATTENDANCE="ATTENDANCE";
-    public static String DOWNATTENDANCE="DATTENDANCE";
+    public static String DOREGISTER="DATTENDANCE";
+    public static String CHECKINTABLE="CHECKIN";
+    public static String TOILETTABLE="TOILETIN";
+    public static String PASTABLE="PASTABLE";
+
+
+
+
 
     public static String UPATTENDANCE="UPATTENDANCE";
 
@@ -20,7 +31,20 @@ public class Constants {
 
 
     //SETTINGS
-    public static String HTTP_URL="192.168.1.2";
+    //public static String HTTP_="http://134.209.69.87:9900";
+    public static String HTTP_="http://192.168.0.100:9900";
+
+    public static String HTTP_URL_DATA=HTTP_+"/nsvr/save/photo";
+    public static String HTTP_URL_CHILDPHOTO=HTTP_+"/nsvr/images/";
+
+    public static String HTTP_URL_STAFFPHOTO=HTTP_+"/staff/images/";
+    public static String HTTP_URL_DREGISTER=HTTP_+"/dreg/register";
+    public static String HTTP_URL_DPASS=HTTP_+"/staff/dpas/register";
+
+    public static String HTTP_URL_UPATTENDANCE=HTTP_+"/child/upattendance/register";
+
+
+
     public static String HTTP_SERVER="www.send.com";
     public static String HTTP_PORT="80";
     public static String PORT="PORT";
@@ -32,12 +56,6 @@ public class Constants {
     public static String STANDALONE="ALONE";
     public static String DEFAULTPIN ="1234";
     public static String DEFAULTPINTABLE ="PIN";
-
-
-
-
-
-
 
 
     public static String FTP_URL="FTP";
