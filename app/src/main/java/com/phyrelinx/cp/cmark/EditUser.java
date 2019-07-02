@@ -20,12 +20,14 @@ public class EditUser extends AppCompatActivity {
     ArrayAdapter adapter;
     ArrayList<DataModel> ft;
     ArrayList<String> sft;
+    Singleton1 singleton1 = Singleton1.getInstance(getApplication());
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edituser);
+
         cttxt =(TextView)findViewById(R.id.countedittxt);
         search = (EditText)findViewById(R.id.search_edit);
         search.addTextChangedListener(new TextWatcher() {
@@ -52,7 +54,13 @@ public class EditUser extends AppCompatActivity {
         sft = new ArrayList<>();
         //load data here   id name group
         new Jasonparse(getBaseContext()).loadDatatoList(Constants.REGISTER,ft);
+        System.out.println("Tunde ft "+ft.size());
         cttxt.setText(String.valueOf(ft.size()));
+        System.out.println("Tunde ft "+ft.size());
+        String all = singleton1.getPrefKey(Constants.REGISTER);
+        System.out.println("Tunde reg "+all);
+
+
         //adapter = new ArrayAdapter(EditUser.this, android.R.layout.simple_list_item_1, ft);
         adapter = new EdituserCustomAdapter(Constants.REGISTER,ft,sft,EditUser.this,EditUser.this);
         listView.setAdapter(adapter);

@@ -673,11 +673,14 @@ public class Jasonparse {
 
                     String name = ct.getString("firstname")+" "+md+" "+ct.getString("lastname");
                     String gender =ct.getString("gender");
-                    String phone = ct.getString("phone");
-                    String teacher = ct.getString("teacherid");
+                    String phone = "00000000000";
 
-                    System.out.println("Tunde phone "+phone);
-                    DataModel detailsModel = new DataModel(ct.getString("firstname"),md,ct.getString("lastname"),id,gender,ct.getString("dob"),phone,teacher);
+                    if (ct.has("phone")) phone = ct.getString("phone");
+
+                    String teacher = "0000";
+                    if (ct.has("teacherid")) teacher=ct.getString("teacherid");
+
+                    DataModel detailsModel = new DataModel(ct.getString("firstname"),md,ct.getString("lastname"),id,gender,(ct.has("dob"))?ct.getString("dob"):"000000",phone,teacher);
                     arrayList.add(detailsModel);
                    // System.out.println("Tunde list "+id+" "+name);
                 }
