@@ -24,7 +24,7 @@ class Singleton1 {
     Tag tagtochange;
     String fnameforscan,lnameforscan;
     ArrayList<NameId> nameidList;
-    String staff,pass;
+    String staff,pass,unitId;
     Boolean canedit =false;
 
     String server,port,organisation,pin,unit,staffname;
@@ -276,6 +276,13 @@ class Singleton1 {
     //Get name of id from list
 
 
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
 
     public String getPass() {
         return pass;

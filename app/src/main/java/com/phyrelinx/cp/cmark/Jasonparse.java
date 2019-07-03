@@ -976,6 +976,7 @@ public class Jasonparse {
                         status = true;
                         singleton1.setStaff(details[0]);
                         singleton1.setUnit(details[3]);
+                        singleton1.setUnitId(details[4]);
                         singleton1.setStaffname(details[1]+" "+details[2]);
                         break;
 
