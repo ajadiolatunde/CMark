@@ -50,7 +50,6 @@ public class Jasonparse {
                 if (body.has(id)){
                     status = true;
                     singleton1.setUserDetails(body.get(id).toString());
-                    System.out.println("Tunde userdetails "+body.get(id));
                 }
             }catch (JSONException io){
 
@@ -148,7 +147,6 @@ public class Jasonparse {
     public boolean tagExistinToilet(String child_tag){
         boolean status = true;
         String data = singleton1.getPrefKey(Constants.TOILETTABLE);
-        System.out.println("Tunde toilet "+data);
         if (data.equals("{}") || data.equals(Constants.CLOSE)){
             status =false;
         }else {
@@ -287,7 +285,6 @@ public class Jasonparse {
     public void markAttendnance(String realid,String tag){
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
         String today = CARUtil.getToday();
-        System.out.println("Tunde today "+today);
         String time = String.valueOf(System.currentTimeMillis());
         if (data.equals("{}") || data.equals(Constants.CLOSE)){
             JSONObject body = new JSONObject();
@@ -296,7 +293,7 @@ public class Jasonparse {
                 body_fortoday.put(realid,new JSONObject(tag));
                 body.put(today,body_fortoday);
                 singleton1.addStringSharedPreff(Constants.ATTENDANCE,body.toString());
-                Toast.makeText(context,"Done bye!  1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,"Done bye!  ",Toast.LENGTH_SHORT).show();
             }catch (JSONException io){
                 io.printStackTrace();
             }
@@ -309,13 +306,11 @@ public class Jasonparse {
                     JSONObject today_body = new JSONObject(js);
                     today_body.put(realid,new JSONObject(tag));
                     oldbody.put(today,today_body);
-                    System.out.println("Tunde len "+today_body.names().toString());
                     singleton1.setCount(String.valueOf(today_body.names().length()));
                 }else{
                     JSONObject today_body = new JSONObject();
                     today_body.put(realid,new JSONObject(tag));
                     oldbody.put(today,today_body);
-                    System.out.println("Tunde len "+today_body.names().toString());
                 }
                 singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
                 Toast.makeText(context,"Done bye!  2",Toast.LENGTH_SHORT).show();
@@ -334,23 +329,49 @@ public class Jasonparse {
         if (out){
             tag.setTag_id(tag.getTag_id()+"X");
         }
-        System.out.println("Tunde today "+today);
 
             try {
                 JSONObject oldbody = new JSONObject(data);
 
                 String js = oldbody.get(today).toString();
                 JSONObject today_body = new JSONObject(js);
+
                 today_body.put(realid,new JSONObject(new Gson().toJson(tag,Tag.class)));
                 oldbody.put(today,today_body);
                 singleton1.setCount(String.valueOf(today_body.names().length()));
                 singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
                 Toast.makeText(context,"Out bye! ",Toast.LENGTH_SHORT).show();
-                System.out.println("Tunde len "+today_body.toString());
 
             }catch (JSONException io){
                 io.printStackTrace();
             }
+
+    }
+    //Update for SF
+    public void updateAttendnance(String realid,String tag_id,Tag tag,boolean out){
+        String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+        String td = tag_id;
+        String today = CARUtil.getToday();
+
+        if (out){
+
+        }
+
+        try {
+            JSONObject oldbody = new JSONObject(data);
+
+            String js = oldbody.get(today).toString();
+            JSONObject today_body = new JSONObject(js);
+            if (today_body.has(td))today_body.remove(td);
+            today_body.put(realid,new JSONObject(new Gson().toJson(tag,Tag.class)));
+            oldbody.put(today,today_body);
+            singleton1.setCount(String.valueOf(today_body.names().length()));
+            singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
+            Toast.makeText(context,"Out SF! ",Toast.LENGTH_SHORT).show();
+
+        }catch (JSONException io){
+            io.printStackTrace();
+        }
 
     }
 
@@ -455,7 +476,6 @@ public class Jasonparse {
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
         arrayList.clear();
         if (data.equals("{}") || data.equals(Constants.CLOSE)){
-            System.out.println("Nothing ..");
         }else {
             try {
                 JSONObject body = new JSONObject(data);
@@ -482,7 +502,6 @@ public class Jasonparse {
                 });
 
                 adapter.notifyDataSetChanged();
-                System.out.println("array  size " +arrayList.size() );
 
             }catch (JSONException io){
                 io.printStackTrace();
@@ -493,7 +512,6 @@ public class Jasonparse {
 //    onlogin success full store id as key for names
     public ArrayList<NameId> buildNamefromid(){
         String data = singleton1.getPrefKey(Constants.REGISTER);
-        System.out.println("Tunde test empty "+data);
         ArrayList<NameId> nameIdslist = new ArrayList<>();
         if (!(data.equals("{}") || data.equals(Constants.CLOSE))){
             try{
@@ -544,7 +562,7 @@ public class Jasonparse {
                 key_body.put("upstatus",upstatus);
                 body.put(id,key_body);
                 singleton1.addStringSharedPreff(Constants.REGISTER,body.toString());
-                Toast.makeText(context,"Done bye!  1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,"Done bye!  ",Toast.LENGTH_SHORT).show();
                 status = true;
 
             }catch (JSONException io){
@@ -570,14 +588,11 @@ public class Jasonparse {
                     oldbody.put(id,key_body);
                     singleton1.addStringSharedPreff(Constants.REGISTER,oldbody.toString());
 
-                    Toast.makeText(context,"Done bye! 2",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"Done bye! ",Toast.LENGTH_SHORT).show();
                     status = true;
-                    System.out.println("Tunde done by 2 ");
 
                 }else{
                     Toast.makeText(context,"Duplicate  please change id 2",Toast.LENGTH_SHORT).show();
-
-                    System.out.println("Tunde it has 3");
 
                 }
 
@@ -585,11 +600,9 @@ public class Jasonparse {
                 io.printStackTrace();
             }
 
-
         }
 
         return status;
-
 
     }
 
@@ -602,10 +615,8 @@ public class Jasonparse {
         try {
             JSONObject bd = new JSONObject(data);
             String names =bd.get(j).toString();
-            System.out.println("TUNDE name to reomve  "+j+","+names);
             JSONObject tosend = new JSONObject(names);
-            String android_id = Settings.Secure.getString(ct.getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
+            String android_id = Settings.Secure.getString(ct.getContentResolver(), Settings.Secure.ANDROID_ID);
 
             tosend.put("optime",String.valueOf(System.currentTimeMillis()));
             tosend.put("id",android_id);
@@ -615,22 +626,18 @@ public class Jasonparse {
                     JSONObject arbd = new JSONObject();
                     arbd.put(j,tosend.toString());
                     singleton1.addStringSharedPreff(Constants.UPATTENDANCE,arbd.toString());
-                    System.out.println("TUNDE len 1"+arbd.names().length());
 
 
                 }else {
                     JSONObject arbd = new JSONObject(archives);
                     arbd.put(j,tosend.toString());
                     singleton1.addStringSharedPreff(Constants.UPATTENDANCE,arbd.toString());
-                    System.out.println("TUNDE len 2 "+arbd.names().length());
-                    System.out.println("TUNDE len 2 "+arbd.names().toString());
 
                 }
                 bd.remove(j);
                 singleton1.addStringSharedPreff(Constants.ATTENDANCE,bd.toString());
 
             }else{
-                System.out.println("TUNDE cant find to remove ");
             }
 
 
@@ -742,9 +749,7 @@ public class Jasonparse {
                 for(int i = 0 ;i<body.names().length();i++){
                     String name = (String)body.names().get(i);
                     String value = body.getString(name);
-
                     arrayList.add(name);
-                    System.out.println("Tunde list "+name+" "+value);
                 }
             }catch (JSONException io){
                 io.printStackTrace();
@@ -857,19 +862,11 @@ public class Jasonparse {
             try {
                 JSONObject oldbody = new JSONObject(data);
                 if (oldbody.has(currentSessiontimeStamp())){
-                    System.out.println("Tunde it has 2");
-                    System.out.println("Tunde it has 2 "+oldbody.toString());
                     String currentSes = currentSessiontimeStamp();
                     JSONObject cujs = new JSONObject(oldbody.get(currentSes).toString());
-                    System.out.println("Tunde it has key 2 "+cujs);
-
-
-
                     JSONObject cstu = new JSONObject(cujs.get("students").toString());
-                    System.out.println("Tunde it has 2 stu "+cstu.toString());
 
                     cstu.put(matric,time);
-                    System.out.println("Tunde it has 2 put student len "+cstu.length());
                     singleton1.addStringSharedPreff(Constants.COUNT,String.valueOf(cstu.length()));
 
 
@@ -882,8 +879,6 @@ public class Jasonparse {
                     cujs.put("type",ctyp);
 
                     oldbody.put(currentSessiontimeStamp(),cujs);
-                    //System.out.println("Tunde it has 2 put body  "+oldbody.toString());
-
 
                     singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
                     Toast.makeText(context,"Done bye! 2",Toast.LENGTH_SHORT).show();
@@ -891,7 +886,6 @@ public class Jasonparse {
 
                 }else{
                     JSONObject cstu = new JSONObject();
-                    System.out.println("Tunde it has 3");
 
                     cstu.put(matric,time);
 
@@ -945,7 +939,7 @@ public class Jasonparse {
         String data = singleton1.getPrefKey(Constants.DOREGISTER);
 
         String res = "0";
-        System.out.println("Tunde   ============ "+data);
+        //System.out.println("Tunde   ============ "+data);
         if (!data.equals("{}")){
             try {
                 JSONObject body = new JSONObject(data);
@@ -976,7 +970,7 @@ public class Jasonparse {
                         status = true;
                         singleton1.setStaff(details[0]);
                         singleton1.setUnit(details[3]);
-                        singleton1.setUnitId(details[4]);
+                        singleton1.setUnitId(details[5]);
                         singleton1.setStaffname(details[1]+" "+details[2]);
                         break;
 
@@ -1008,7 +1002,19 @@ public class Jasonparse {
         return ct;
     }
 
+    public String getMode() {
+        String res = " ";
+        String dt = singleton1.getPrefKey(Constants.MODE);
+        if ((dt.equals("{}") || dt.equals(Constants.CLOSE))) {
 
+            res = Constants.MODE_SF;
+
+        }else {
+            res = Constants.MODE_AF;
+        }
+
+        return res;
+    }
 
 
 }

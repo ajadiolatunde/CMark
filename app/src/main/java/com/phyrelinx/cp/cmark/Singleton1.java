@@ -59,14 +59,12 @@ class Singleton1 {
 
     public void addStringSharedPreff(String key, String value){
         if (isPrefCreated(key)){
-            System.out.println("Tunde....  yes prefcreated");
             SharedPreferences.Editor editor = mSharedPrefrence.edit();
             editor.putString(key,value);
             editor.commit();
 
         }else {
             //setmSharedPrefrence();
-            System.out.println("Tunde about to be ");
             SharedPreferences.Editor editor = mSharedPrefrence.edit();
             editor.putString("test","init");
             editor.putString(key,value);
@@ -191,12 +189,10 @@ class Singleton1 {
         String an = this.getPrefKey(Constants.DEFAULTPINTABLE);
         if (an.equals("{}")){
             this.pin = Constants.DEFAULTPIN;
-            System.out.println("Tunde "+pin);
 
         }else {
 
             this.pin = an;
-            System.out.println("Tunde else "+pin);
 
         }
 
@@ -233,12 +229,10 @@ class Singleton1 {
 
         if (an.equals("{}")){
             this.port = Constants.HTTP_PORT;
-            System.out.println("Tunde "+port);
 
         }else {
 
             this.port = an;
-            System.out.println("Tunde else "+port);
 
         }
     }

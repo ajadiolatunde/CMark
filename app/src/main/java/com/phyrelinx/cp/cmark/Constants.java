@@ -28,6 +28,12 @@ public class Constants {
     public static String GROUP="GROUP";
     public static String LOCATION="LOCATION";
 
+    public static String MODE = "MODE";
+    public static String MODE_AF = "MODE_AF";
+
+    public static String MODE_SF = "MODE_SF";
+
+
 
 
     //SETTINGS
@@ -58,7 +64,7 @@ public class Constants {
     public static String DEFAULTPINTABLE ="PIN";
 
 
-    public static String FTP_URL="FTP";
+    public static String FTP_URL="192.168.0.100";
     public static String FTP_USER="REGISETER";
     public static String FTP_PASS="REGISETER";
 //Tables
@@ -67,13 +73,6 @@ public class Constants {
     public static String BIO="BIO";
     public static String REG="REG";
     public static String ATTENDANCETYPE="TYPE";
-
-    //
-
-
-
-
-
 
     //LDAP
     public static String LDAP_GROUP="REGISETER";
@@ -91,23 +90,8 @@ public class Constants {
 
 
     public static String MESSAGE="message";
-    public static String SSHPATH="/home/olatunde/uploads";
-    public static String SSHPATHRESTORE="/home/olatunde/hello";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static String SSHPATHUPLOAD="/home/user/uploads";
+    public static String SSHPATHRESTORE="/home/user/hello";
 
 
 }

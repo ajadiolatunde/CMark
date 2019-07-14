@@ -1,16 +1,27 @@
 package com.phyrelinx.cp.cmark;
 
 import android.content.Context;
+import android.content.pm.PackageInstaller;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.SyncStateContract;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.SftpProgressMonitor;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,6 +64,168 @@ public class CARUtil {
         return String.valueOf(pass);
     }
 
+    public static boolean download(String data, String remote, Context context,AsynTaskCallback asynTaskCallback){
+        FTPClient con = null;
+        Boolean send = false;
+
+        try
+        {
+            con = new FTPClient();
+            con.connect(Constants.FTP_URL);
+            if (con.login(Constants.FTP_USER, Constants.FTP_PASS))
+            {
+//                Toast.makeText(context,"Connected ",Toast.LENGTH_SHORT).show();
+                asynTaskCallback.processFinish("Connected .....");
+                con.enterLocalPassiveMode(); // important!
+                con.setFileType(FTP.BINARY_FILE_TYPE);
+                OutputStream out = new FileOutputStream(new File(data));
+                asynTaskCallback.processFinish("Retrieve files .....");
+                boolean result = con.retrieveFile(remote, out);
+                out.close();
+                if (result) {
+                    Log.v("download result", "succeeded");
+                    send = true;
+
+                }
+                con.logout();
+                con.disconnect();
+            }
+        }
+        catch (Exception e)
+        {
+            Log.v("download result","failed");
+            asynTaskCallback.processFinish("Failed .");
+
+            e.printStackTrace();
+        }
+        return send;
+
+    }
+
+    public static  boolean downloadsftp(String srcfullpath, String myfile, final Context context){
+        Singleton1 singleton1 = Singleton1.getInstance(context);
+        Boolean status = false;
+
+        try {
+            JSch ssh = new JSch();
+            Session session = ssh.getSession(Constants.FTP_USER, Constants.FTP_URL, 22);
+
+            // Remember that this is just for testing and we need a quick access, you can add an identity and known_hosts file to prevent
+            // Man In the Middle attacks
+            java.util.Properties config = new java.util.Properties();
+            //config.put("kex", "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256");
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword(Constants.FTP_PASS);
+
+            session.connect();
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftp = (ChannelSftp) channel;
+
+            //sftp.cd(directory);
+            // If you need to display the progress of the upload, read how to do it in the end of the article
+
+            // use the get method , if you are using android remember to remove "file://" and use only the relative path
+            sftp.get(srcfullpath,context.getFilesDir().toString()+"/"+myfile,new progressMonitor(context, new AsynTaskCallback() {
+                @Override
+                public void processFinish(final String str) {
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Integer.parseInt(str)%20==0) {
+                                Toast.makeText(context,str+" %",Toast.LENGTH_SHORT).show();
+                            }
+                            System.out.println("Tunde The file download !"+str);
+
+                        }
+                    });
+                }
+            }));
+
+            Boolean success = true;
+            status =success;
+
+            if(success){
+                System.out.println("Tunde The file has been succesfully downloaded");
+            }else {
+                System.out.println("Tunde The file download failed  !");
+
+            }
+
+            channel.disconnect();
+            session.disconnect();
+        } catch (JSchException e) {
+            System.out.println(e.getMessage().toString());
+            System.out.println("Tunde The file     ......  download failed  !");
+
+
+
+            e.printStackTrace();
+        } catch (SftpException e) {
+            System.out.println(e.getMessage().toString());
+            e.printStackTrace();
+        }
+
+        return status;
+    }
+
+
+    //https://ourcodeworld.com/articles/read/31/how-to-show-the-progress-of-an-upload-and-download-with-jsch-sftp-android
+
+    public static class progressMonitor implements SftpProgressMonitor {
+        private long max                = 0;
+        private long count              = 0;
+        private long percent            = 0;
+        Singleton1 singleton1 ;
+        AsynTaskCallback callback;
+        Context context;
+        //private CallbackContext callbacks = null;
+
+        // If you need send something to the constructor, change this method
+        public progressMonitor(final Context context,AsynTaskCallback asynTaskCallback) {
+            this.context = context;
+            singleton1 = Singleton1.getInstance(context);
+            callback = asynTaskCallback;
+
+        }
+
+        public void init(int op, String src, String dest, long max) {
+            this.max = max;
+            System.out.println("starting");
+            System.out.println(src); // Origin destination
+            System.out.println(dest); // Destination path
+            System.out.println(max); // Total filesize
+        }
+
+        public boolean count(long bytes){
+            this.count += bytes;
+            long percentNow = this.count*100/max;
+            if(percentNow>this.percent){
+                this.percent = percentNow;
+                //singleton1.setProStatus(String.valueOf(percent));
+
+                System.out.println("progress "+this.percent); // Progress 0,0
+                System.out.println(max); //Total ilesize
+                System.out.println(this.count); // Progress in bytes from the total
+                callback.processFinish(String.valueOf(percent));
+            }
+
+            return(true);
+        }
+
+        public void end(){
+            System.out.println("finished");// The process is over
+            System.out.println(this.percent); // Progress
+            System.out.println(max); // Total filesize
+            System.out.println(this.count); // Process in bytes from the total
+        }
+
+    }
+
+
 
 
     public static String getToday(){
@@ -61,6 +234,69 @@ public class CARUtil {
         String[] tt = timestamp.toString().split(" ");
         return tt[0];
 
+    }
+
+    public static boolean uploadsftp(String localfilename, String destinationfullpath, final Context context){
+        Singleton1 singleton1 = Singleton1.getInstance(context);
+        Boolean success = false;
+
+
+        try {
+            JSch ssh = new JSch();
+            Session session = ssh.getSession(Constants.FTP_USER,Constants.FTP_URL, 22);
+            // Remember that this is just for testing and we need a quick access, you can add an identity and known_hosts file to prevent
+            // Man In the Middle attacks
+            java.util.Properties config = new java.util.Properties();
+            //config.put("kex", "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256");
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.setPassword(Constants.FTP_PASS);
+
+            session.connect();
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftp = (ChannelSftp) channel;
+
+            //sftp.cd(directory);
+
+            //sftp.put("mylocalfilepath.txt","myremotefilepath.txt",new progressMonitor());
+            sftp.put(context.getFilesDir().toString()+"/"+localfilename,destinationfullpath,new progressMonitor(context, new AsynTaskCallback() {
+                @Override
+                public void processFinish(final String str) {
+                    final Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Integer.parseInt(str)%20==0) {
+                                Toast.makeText(context,str+" %",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            }));
+            success=true;
+
+            if(success){
+                System.out.println("Tunde The file has been succesfully uploaded");
+            }else {
+                System.out.println("Tunde The file download failed  !");
+
+            }
+
+            channel.disconnect();
+            session.disconnect();
+        } catch (JSchException e) {
+            System.out.println(e.getMessage().toString());
+            System.out.println("Tunde The file     ......  download failed  !");
+
+
+            e.printStackTrace();
+        } catch (SftpException e) {
+            System.out.println(e.getMessage().toString());
+            e.printStackTrace();
+        }
+        return success;
     }
 
 

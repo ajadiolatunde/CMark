@@ -68,6 +68,9 @@
         <activity android:name=".QrToilet"  android:screenOrientation="portrait">
 
         </activity>
+        <activity android:name=".Restrive"  android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

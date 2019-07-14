@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     Singleton1 singleton1;
     Button capturebtn,markbtn,edituserbtn,check_in_btn,reportbtn,mark_toilet_btn,check_out_btn;
-    Button downloadAttend_btn,teachersbtn;
+    Button downloadAttend_btn,transfer_btn;
     TextView download_sum,attend_sum,checkintable_sum,toilettable_sum,txt_id;
     TextView green_txt,red_txt,yellow_txt;
     ImageView imageView;
@@ -50,11 +50,14 @@ public class MainActivity extends AppCompatActivity {
         attend_sum = (TextView)findViewById( R.id.attendance_sum_txt) ;
         checkintable_sum = (TextView)findViewById( R.id.checkin_sum_txt) ;
         toilettable_sum = (TextView)findViewById( R.id.toilet_sum_txt) ;
-        teachersbtn = (Button)findViewById(R.id.teachers_btn);
-        teachersbtn.setOnClickListener(new View.OnClickListener() {
+        transfer_btn = (Button)findViewById(R.id.transfers_btn);
+        transfer_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getBaseContext(),"Get teachers",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this,Restrive.class);
+                startActivity(intent);
+                finish();
+                //Toast.makeText(getBaseContext(),"Get teachers",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -156,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
                     public void processFinish(String str) {
                         String res  =str;
                         if (!res.contains("connect")) {
-                            System.out.println("Tunde " + str);
                             singleton1.addStringSharedPreff(Constants.DOREGISTER, str);
                             Toast.makeText(getBaseContext(), "Downloaded", Toast.LENGTH_SHORT).show();
                         }else{
@@ -204,9 +206,15 @@ public class MainActivity extends AppCompatActivity {
         check_in_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,ManageUser.class);
-                startActivity(intent);
-                finish();
+                if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
+                    Intent intent = new Intent(MainActivity.this, ManageUser.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    Intent intent = new Intent(MainActivity.this,Qrcodedetect.class);
+                    intent.putExtra("id",Constants.SKIP);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -269,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
 
     //Test
