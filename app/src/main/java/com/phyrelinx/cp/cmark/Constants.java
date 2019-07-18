@@ -65,8 +65,8 @@ public class Constants {
 
 
     public static String FTP_URL="192.168.0.100";
-    public static String FTP_USER="REGISETER";
-    public static String FTP_PASS="REGISETER";
+    public static String FTP_USER="user";
+    public static String FTP_PASS="user123";
 //Tables
     public static String FINGERS="FINGERS";
 
@@ -90,8 +90,8 @@ public class Constants {
 
 
     public static String MESSAGE="message";
-    public static String SSHPATHUPLOAD="/home/user/uploads";
-    public static String SSHPATHRESTORE="/home/user/hello";
+    public static String SSHPATHUPLOAD="/home/olatunde/uploads";
+    public static String SSHPATHRESTORE="/home/olatunde/uploads";
 
 
 }

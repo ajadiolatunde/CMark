@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.view.View;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -26,6 +28,7 @@ class Singleton1 {
     ArrayList<NameId> nameidList;
     String staff,pass,unitId;
     Boolean canedit =false;
+    JSONObject jsonObject;
 
     String server,port,organisation,pin,unit,staffname;
 
@@ -323,5 +326,11 @@ class Singleton1 {
         return  new File(externalFileDir.toString(),name);
     }
 
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
 
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
+    }
 }

@@ -4,29 +4,20 @@ import android.content.Context;
 import android.provider.Settings;
 import android.widget.Toast;
 
-import com.google.android.gms.common.util.Hex;
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class Jasonparse {
     Context context;
@@ -367,13 +358,91 @@ public class Jasonparse {
             oldbody.put(today,today_body);
             singleton1.setCount(String.valueOf(today_body.names().length()));
             singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
-            Toast.makeText(context,"Out SF! ",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context,"Out SF! ",Toast.LENGTH_SHORT).show();
 
         }catch (JSONException io){
             io.printStackTrace();
         }
 
     }
+
+    public void resToreFIle(File file,String table){
+        String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+
+        try {
+            JSONParser parser = new JSONParser();
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Object obj = parser.parse(reader);
+            org.json.simple.JSONObject employeeList = (org.json.simple.JSONObject) obj;
+            if (!countAttendance(employeeList.toJSONString()).equals("0") ){
+                JSONObject  jsonObject = singleton1.getJsonObject();
+                try {
+
+                    if (data.equals("{}") || data.equals(Constants.CLOSE)){
+                        JSONObject body = new JSONObject();
+                        JSONObject body_fortoday= new JSONObject();
+
+                            for (int i = 0; i < jsonObject.names().length(); i++) {
+                                String relId = (String) jsonObject.names().get(i);
+                                Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
+                                if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
+                                body_fortoday.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
+                            }
+                        body.put(CARUtil.getToday(), body_fortoday);
+                        singleton1.setCount(String.valueOf(body_fortoday.names().length()));
+                        singleton1.addStringSharedPreff(Constants.ATTENDANCE,body.toString());
+
+                        //check if timestamp exist
+                    }else{
+                            JSONObject oldbody = new JSONObject(data);
+                            String today = CARUtil.getToday();
+                            if (oldbody.has(today)){
+                                String js = oldbody.get(today).toString();
+                                JSONObject today_body = new JSONObject(js);
+                                for (int i = 0; i < jsonObject.names().length(); i++) {
+                                    String relId = (String) jsonObject.names().get(i);
+                                    Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
+                                    if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
+                                    today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
+                                }
+
+                                oldbody.put(CARUtil.getToday(), today_body);
+                                singleton1.setCount(String.valueOf(today_body.names().length()));
+                                singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
+                            }else{
+
+                                JSONObject today_body = new JSONObject();
+                                for (int i = 0; i < jsonObject.names().length(); i++) {
+                                    String relId = (String) jsonObject.names().get(i);
+                                    Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
+                                    if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
+                                    today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
+                                }
+
+                                oldbody.put(today,today_body);
+                                singleton1.setCount(String.valueOf(today_body.names().length()));
+                                singleton1.addStringSharedPreff(Constants.ATTENDANCE,oldbody.toString());
+
+                            }
+                    }
+
+                }catch (JSONException io){
+
+                }
+
+
+            }
+
+            System.out.println("Tunde employlist "+employeeList);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     //get count
@@ -386,6 +455,30 @@ public class Jasonparse {
                 JSONObject body = new JSONObject(data);
                 if (body.has(today)){
                     JSONObject body_today = (JSONObject) body.get(today);
+                    count = String .valueOf(body_today.names().length());
+                }
+
+            }catch (JSONException io){
+                io.printStackTrace();
+
+            }
+        }
+
+        return count;
+
+    }
+
+
+    public String countAttendance(String json){
+        String count = "0";
+        String data = json;
+        String today = CARUtil.getToday();
+        if (!(data.equals("{}") || data.equals(Constants.CLOSE))) {
+            try {
+                JSONObject body = new JSONObject(data);
+                if (body.has(today)){
+                    JSONObject body_today = (JSONObject) body.get(today);
+                    singleton1.setJsonObject(body_today);
                     count = String .valueOf(body_today.names().length());
                 }
 

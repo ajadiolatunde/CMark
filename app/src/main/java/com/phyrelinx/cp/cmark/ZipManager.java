@@ -31,7 +31,6 @@ public class ZipManager {
 
             for (int i = 0; i < _files.length; i++) {
                 if (_files[i].endsWith(".jpg")|| _files[i].endsWith(".att") || _files[i].endsWith(".fin")) {
-                    //System.out.println("Tunde Compress Adding: " + path + "/" + _files[i]);
                     FileInputStream fi = new FileInputStream(path + "/" + _files[i]);
                     origin = new BufferedInputStream(fi, BUFFER);
 
