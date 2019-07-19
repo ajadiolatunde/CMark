@@ -178,7 +178,7 @@
                     android:layout_height="wrap_content" />
                 <Button
                     android:layout_width="match_parent"
-                    android:id="@+id/teachers_btn"
+                    android:id="@+id/transfers_btn"
                     android:background="@drawable/myfirst"
                     android:layout_margin="0dp"
                     android:layout_weight="1"

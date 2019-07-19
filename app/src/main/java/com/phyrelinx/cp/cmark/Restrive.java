@@ -38,6 +38,7 @@ public class Restrive extends AppCompatActivity {
         status_txt = (TextView)findViewById(R.id.ret_status);
         upload_txt = (TextView)findViewById(R.id.ret_upload);
         cache_btn = (Button)findViewById(R.id.clear_btn);
+        cache_btn.setEnabled(false);
         download_txt =(TextView)findViewById(R.id.ret_download);
         download_edit = (EditText)findViewById(R.id.ret_edit);
         download_txt.setEnabled(false);
@@ -165,7 +166,7 @@ public class Restrive extends AppCompatActivity {
 
                 }
                 makezipfile(uploadkey);
-                status_txt.setText("Uploading files ......");
+                status_txt.setText("Uploading files ..");
 
                 Thread tr = new Thread(new Runnable() {
                     @Override
@@ -176,7 +177,10 @@ public class Restrive extends AppCompatActivity {
                             public void run() {
                                 status_txt.setText("Done ......");
 
-                                if (statuse) Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
+                                if (statuse) {Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
+                                cache_btn.setEnabled(true);
+
+                                }
 
                             }
                         });

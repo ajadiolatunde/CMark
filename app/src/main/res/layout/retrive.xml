@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/colorAccent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/ret_key"
+        android:text="Test"
+        android:textSize="30dp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/ret_status"
+        android:text="Status"
+        android:background="@drawable/myfirst"
+        android:textSize="30dp"
+        android:drawableLeft="@drawable/ic_notifications_active_black_24dp"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="match_parent"
+        android:id="@+id/ret_upload"
+        android:text="Upload"
+        android:drawableLeft="@drawable/ic_file_upload_black_24dp"
+        android:background="@drawable/myfirst"
+        android:textSize="30dp"
+        android:layout_margin="5dp"
+        android:padding="5dp"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:background="@drawable/myfirst"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/ret_download"
+            android:text="Download"
+            android:textSize="30dp"
+            android:drawableLeft="@drawable/ic_file_download_black_24dp"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_width="match_parent"
+            android:id="@+id/ret_edit"
+            android:inputType="number"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/clear_btn"
+        android:layout_margin="10dp"
+        android:padding="4dp"
+        android:layout_gravity="center"
+        android:background="@drawable/myfirst"
+        android:text="Clear"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
