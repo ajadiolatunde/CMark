@@ -90,8 +90,8 @@ public class Constants {
 
 
     public static String MESSAGE="message";
-    public static String SSHPATHUPLOAD="/home/olatunde/uploads";
-    public static String SSHPATHRESTORE="/home/olatunde/uploads";
+    public static String SSHPATHUPLOAD="/home/user/uploads";
+    public static String SSHPATHRESTORE="/home/user/uploads";
 
 
 }

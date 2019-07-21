@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +28,8 @@ public class Restrive extends AppCompatActivity {
     EditText download_edit;
     Button cache_btn;
     boolean success = false;
+    private Handler mainThreadHandler;
+    Thread tr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,41 @@ public class Restrive extends AppCompatActivity {
         download_txt =(TextView)findViewById(R.id.ret_download);
         download_edit = (EditText)findViewById(R.id.ret_edit);
         download_txt.setEnabled(false);
+        // This handler is used to handle child thread message from main thread message queue.
+        mainThreadHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case 1:
+                        status_txt.setText("Loading ... .");
+                        break;
+                    case 2:
+                        status_txt.setText("Uploading files.. .");
+                        tr.start();
+                        break;
+                    case 3:
+                        Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
+                            cache_btn.setEnabled(true);
+                        status_txt.setText("Done...");
+                        break;
+
+
+
+                    case 4:
+                        Toast.makeText(getBaseContext(),"Failed",Toast.LENGTH_SHORT).show();
+                            cache_btn.setEnabled(false);
+                        status_txt.setText("Failed");
+                        upload_txt.setEnabled(true);
+                        break;
+
+
+
+
+                }
+
+            }
+        };
+
         download_edit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -82,12 +120,7 @@ public class Restrive extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 status_txt.setText("Connecting  ......");
-                try {
-                    Thread.sleep(1000);
 
-                }catch (InterruptedException io){
-
-                }
                 download_edit.setEnabled(false);
                 status_txt.setText("Downloading files ......");
                 Thread t = new Thread(new Runnable() {
@@ -158,37 +191,22 @@ public class Restrive extends AppCompatActivity {
         upload_txt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                status_txt.setText("Loading files ......");
-                try {
-                    Thread.sleep(1000);
-
-                }catch (InterruptedException io){
-
-                }
+                upload_txt.setEnabled(false);
                 makezipfile(uploadkey);
-                status_txt.setText("Uploading files ..");
 
-                Thread tr = new Thread(new Runnable() {
+                tr = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         final boolean statuse = CARUtil.uploadsftp(uploadkey+".zip", Constants.SSHPATHUPLOAD, Restrive.this);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                status_txt.setText("Done ......");
-
-                                if (statuse) {Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
-                                cache_btn.setEnabled(true);
-
-                                }
-
-                            }
-                        });
-
-
+                        Message fin  = new Message();
+                        if (statuse){fin.what = 3;}
+                        else{
+                            fin.what = 4;
+                        }
+                        mainThreadHandler.sendMessage(fin);
                     }
                 });
-                tr.start();
+
 
             }
         });
@@ -198,32 +216,33 @@ public class Restrive extends AppCompatActivity {
 
     }
 
-    private void makezipfile(String key){
-        File filedir = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
-        if (!filedir.exists()) filedir.mkdir();
+    private void makezipfile(final String key){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Message childThreadMessage = new Message();
+                childThreadMessage.what = 1;
+                // Put the message in main thread message queue.
+                mainThreadHandler.sendMessage(childThreadMessage);
+                File filedir = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
+                if (!filedir.exists()) filedir.mkdir();
+                writeToFile(singleton1.getPrefKey(Constants.ATTENDANCE),getBaseContext(),"att",".att");
+                final File zipfile = new File(getApplicationContext().getFilesDir(), key+".zip");
+                if (zipfile.exists()) zipfile.delete();
+                ZipManager newzip = new ZipManager();
+                String[] pics = filedir.list();
+                newzip.zip(filedir.toString(), pics, zipfile.toString());
+                Message childThreadMessage1 = new Message();
+                childThreadMessage1.what = 2;
+                mainThreadHandler.sendMessage(childThreadMessage1);
+            }
+        });
+        thread.start();
 
-        writeToFile(singleton1.getPrefKey(Constants.ATTENDANCE),getBaseContext(),"att",".att");
-
-        final File zipfile = new File(getApplicationContext().getFilesDir(), key+".zip");
-        if (zipfile.exists()) {
-            zipfile.delete();
-
-            //all=all+"zipfile exist deleting \n";
-        }
-        ZipManager newzip = new ZipManager();
-        String[] pics = filedir.list();
-
-        newzip.zip(filedir.toString(), pics, zipfile.toString());
-//                    for (String k : pics) {
-//                        System.out.println("Tunde  Files " + k);
-//                    }
 
     }
 
     private void writeToFile(String data, Context context, String attendance, String externsion) {
-//        System.out.println("Tunde writing..... "+org+externsion);
-//        System.out.println("Tunde writing  data.........."+data);
-        //Directory to store fule
         File filedir = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
         if (!filedir.exists()) filedir.mkdir();
         final File file = new File(filedir.toString(), attendance+externsion);

@@ -32,4 +32,7 @@ dependencies {
     implementation 'me.dm7.barcodescanner:zxing:1.9.8'
     implementation files('libs/httpclient-4.4.1.1.jar')
     implementation 'com.android.support:design:27.1.1'
+    implementation files('libs/jsch-0.1.55.jar')
+    implementation files('libs/org.json.simple-0.4.jar')
+
 }
