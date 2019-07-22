@@ -1,5 +1,6 @@
 package com.phyrelinx.cp.cmark;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ public class Restrive extends AppCompatActivity {
     boolean success = false;
     private Handler mainThreadHandler;
     Thread tr;
+    Handler mHandler;
+    ProgressDialog mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,8 @@ public class Restrive extends AppCompatActivity {
                 }
                 singleton1.addStringSharedPreff(Constants.ATTENDANCE,Constants.CLOSE);
                 singleton1.addStringSharedPreff(Constants.CHECKINTABLE, Constants.CLOSE);
+                status_txt.setText("Cleared ");
+                cache_btn.setVisibility(View.GONE);
 
 
 
@@ -119,15 +124,18 @@ public class Restrive extends AppCompatActivity {
         download_txt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                status_txt.setText("Connecting  ......");
-
+                mHandler=new Handler();
+                mProgressBar= new ProgressDialog(Restrive.this);
                 download_edit.setEnabled(false);
-                status_txt.setText("Downloading files ......");
+                //status_txt.setText("Downloading files ......");
+                mProgressBar.setMax(100);
+                mProgressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressBar.show();
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         final String file = CARUtil.getToday()+"_"+download_edit.getText().toString()+".zip";
-                        final boolean status =CARUtil.downloadsftp(Constants.SSHPATHRESTORE+"/"+file,file,getBaseContext());
+                        final boolean status =CARUtil.downloadsftp(Constants.SSHPATHRESTORE+"/"+file,file,getBaseContext(),mProgressBar);
                         final Handler handler = new Handler(Looper.getMainLooper());
 
                         if (status) {

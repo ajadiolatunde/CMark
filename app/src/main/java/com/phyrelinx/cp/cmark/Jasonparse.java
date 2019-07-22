@@ -272,22 +272,41 @@ public class Jasonparse {
 //        });
 //    }
 
+    public boolean iftoday(){
+        boolean res = false;
+        String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+        String today = CARUtil.getToday();
+        if (data.equals("{}") || data.equals(Constants.CLOSE)){
+            res = false;
+        }else {
+            try {
+                JSONObject oldbody = new JSONObject(data);
+                if (oldbody.has(today)){
+                    res = true;
+                }else{
+
+                   res = false;
+                }
+            }catch (JSONException io){
+                io.printStackTrace();
+            }
+        }
+        return res;
+
+    }
+
     //Status table for database
     public void markAttendnance(String realid,String tag){
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
         String today = CARUtil.getToday();
         String time = String.valueOf(System.currentTimeMillis());
-        File filedir = new File(context.getFilesDir().toString(), Constants.MAPPHOTODIRR);
-        if (!filedir.exists()) filedir.mkdir();
+
 
 
         if (data.equals("{}") || data.equals(Constants.CLOSE)){
             JSONObject body = new JSONObject();
             JSONObject body_fortoday= new JSONObject();
-            for (File fi:filedir.listFiles()){
-                fi.delete();
 
-            }
             try{
                 body_fortoday.put(realid,new JSONObject(tag));
                 body.put(today,body_fortoday);
@@ -307,10 +326,7 @@ public class Jasonparse {
                     oldbody.put(today,today_body);
                     singleton1.setCount(String.valueOf(today_body.names().length()));
                 }else{
-                    for (File fi:filedir.listFiles()){
-                        fi.delete();
 
-                    }
                     JSONObject today_body = new JSONObject();
                     today_body.put(realid,new JSONObject(tag));
                     oldbody.put(today,today_body);

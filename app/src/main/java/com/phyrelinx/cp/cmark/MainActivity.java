@@ -275,12 +275,24 @@ public class MainActivity extends AppCompatActivity {
         if (!new Jasonparse(getBaseContext()).countCheckIn_toilet(Constants.TOILETTABLE).equals("0"))red_txt.setVisibility(View.VISIBLE);
         if (!new Jasonparse(getBaseContext()).countCheckIn_toilet(Constants.CHECKINTABLE).equals("0"))yellow_txt.setVisibility(View.VISIBLE);
 
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!new Jasonparse(getBaseContext()).iftoday()){
+                    File fi = new File(getFilesDir(),Constants.MAPPHOTODIRR);
+                    System.out.println("Tunde len of photo len  "+fi.listFiles().length);
+                    for (File df: fi.listFiles()){
+                        df.delete();
+                    }
+                    singleton1.addStringSharedPreff(Constants.CHECKINTABLE, Constants.CLOSE);
+                    singleton1.addStringSharedPreff(Constants.TOILETTABLE, Constants.CLOSE);
+
+                }
+            }
+        });
+        thread.start();
 
     }
-
-
-
-    //Test
 
 
 

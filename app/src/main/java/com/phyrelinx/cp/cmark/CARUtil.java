@@ -1,5 +1,6 @@
 package com.phyrelinx.cp.cmark;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageInstaller;
 import android.net.wifi.WifiManager;
@@ -102,7 +103,7 @@ public class CARUtil {
 
     }
 
-    public static  boolean downloadsftp(String srcfullpath, String myfile, final Context context){
+    public static  boolean downloadsftp(String srcfullpath, String myfile, final Context context, final ProgressDialog progressBar){
         Singleton1 singleton1 = Singleton1.getInstance(context);
         Boolean status = false;
 
@@ -136,6 +137,7 @@ public class CARUtil {
                         @Override
                         public void run() {
                             if (Integer.parseInt(str)%20==0) {
+                                progressBar.setProgress(Integer.parseInt(str));
                                 Toast.makeText(context,str+" %",Toast.LENGTH_SHORT).show();
                             }
                             System.out.println("Tunde The file download !"+str);
