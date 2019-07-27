@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         download_sum.setText(new Jasonparse(getBaseContext()).countUsers());
+                        singleton1.setDatalist(false);
 
                     }
                 });

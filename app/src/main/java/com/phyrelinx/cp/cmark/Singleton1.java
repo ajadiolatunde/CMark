@@ -26,6 +26,8 @@ class Singleton1 {
     Tag tagtochange;
     String fnameforscan,lnameforscan;
     ArrayList<NameId> nameidList;
+    ArrayList<DataModel> dataModelArrayList;
+    Boolean datalist = false;
     String staff,pass,unitId;
     Boolean canedit =false;
     JSONObject jsonObject;
@@ -332,5 +334,24 @@ class Singleton1 {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public ArrayList<DataModel> getDataModelArrayList() {
+        return dataModelArrayList;
+    }
+
+
+
+    public void setDataModelArrayList(ArrayList<DataModel> dataModelArrayList) {
+        this.dataModelArrayList = dataModelArrayList;
+    }
+
+
+    public Boolean getDatalist() {
+        return datalist;
+    }
+
+    public void setDatalist(Boolean datalist) {
+        this.datalist = datalist;
     }
 }
