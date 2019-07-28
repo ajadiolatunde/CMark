@@ -352,6 +352,7 @@ class Singleton1 {
     }
 
     public void setDatalist(Boolean datalist) {
+
         this.datalist = datalist;
     }
 }

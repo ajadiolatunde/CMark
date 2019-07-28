@@ -139,6 +139,23 @@ public class MainActivity extends AppCompatActivity {
         check_out_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if (!singleton1.getDatalist()) {
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ArrayList<DataModel> ft = new ArrayList<>();
+                            new Jasonparse(getBaseContext()).loadDatatoList(Constants.DOREGISTER, ft);
+                            singleton1.setDatalist(true);
+                            singleton1.setDataModelArrayList((ArrayList<DataModel>)ft.clone());
+                            ft.clear();
+                        }
+                    });
+                    thread.start();
+
+
+                }
+
                 Intent intent = new Intent(MainActivity.this,Qrcheckout.class);
                 if(!new Jasonparse(getBaseContext()).countAttendance().equals("0")) {
                     startActivity(intent);
