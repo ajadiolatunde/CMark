@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         download_sum.setText(new Jasonparse(getBaseContext()).countUsers());
+                        //Ensure refresh
                         singleton1.setDatalist(false);
 
                     }

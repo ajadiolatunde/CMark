@@ -2,13 +2,16 @@ package com.phyrelinx.cp.cmark;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -107,17 +110,41 @@ public class Restrive extends AppCompatActivity {
         cache_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File filere = new File(getApplicationContext().getFilesDir().toString(),Constants.MAPPHOTODIRR);
-                for (File f :filere.listFiles()){
-                    f.delete();
-                }
-                singleton1.addStringSharedPreff(Constants.ATTENDANCE,Constants.CLOSE);
-                singleton1.addStringSharedPreff(Constants.CHECKINTABLE, Constants.CLOSE);
-                status_txt.setText("Cleared ");
-                cache_btn.setVisibility(View.GONE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Restrive.this);
+                final EditText input = new EditText(Restrive.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                final String number = String.valueOf((int) (Math.random() * 2000 + 1000));
+                builder.setTitle("Pin")
+                        .setMessage("PLease enter "+number)
+                        .setView(input)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (input.getText().toString().equals(number)) {
 
+                                    File filere = new File(getApplicationContext().getFilesDir().toString(),Constants.MAPPHOTODIRR);
+                                    for (File f :filere.listFiles()){
+                                        f.delete();
+                                    }
+                                    singleton1.addStringSharedPreff(Constants.ATTENDANCE,Constants.CLOSE);
+                                    singleton1.addStringSharedPreff(Constants.CHECKINTABLE, Constants.CLOSE);
+                                    status_txt.setText("Cleared ");
+                                    cache_btn.setVisibility(View.GONE);
 
+                                } else {
+                                    Toast.makeText(getBaseContext(), "Failed ,wrong token", Toast.LENGTH_SHORT).show();
+                                }
 
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
 
@@ -147,6 +174,8 @@ public class Restrive extends AppCompatActivity {
 
                                     File zipfile = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
                                     if (!zipfile.exists()) zipfile.mkdir();
+                                    status_txt.setText("Processing files....");
+
                                     //(zipfile,destination)
                                     ZipManager.unpackZip(getApplicationContext().getFilesDir().toString() + "/" + file, zipfile.toString());
                                     File attfile = new File(zipfile,  "att.att");
@@ -154,7 +183,6 @@ public class Restrive extends AppCompatActivity {
 
                                     if (attfile.exists()) {
                                         new Jasonparse(getBaseContext()).resToreFIle(attfile,Constants.ATTENDANCE);
-                                        System.out.println("Tunde restore file exist att");
                                         success = true;
                                         status_txt.setText("Done !");
 

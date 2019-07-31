@@ -137,7 +137,10 @@ public class CARUtil {
                         @Override
                         public void run() {
                             if (Integer.parseInt(str)%20==0) {
-                                progressBar.setProgress(Integer.parseInt(str));
+                                int progress = Integer.parseInt(str);
+                                progressBar.setProgress(progress);
+                                if (progress == 100)progressBar.dismiss();
+
                                 Toast.makeText(context,str+" %",Toast.LENGTH_SHORT).show();
                             }
                             System.out.println("Tunde The file download !"+str);
