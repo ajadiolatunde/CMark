@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@color/colorAccent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/eventlen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Marshmallow"
+        android:textStyle="bold"
+        android:textColor="@color/white" />
+
+
+    <TextView
+        android:id="@+id/eventdatetxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/eventlen"
+        android:layout_marginTop="5dp"
+        android:text="Android 6.0"
+        android:textColor="@color/white" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:id="@+id/upload_students_txt"
+        android:text="Upload"
+        android:textStyle="bold"
+        android:drawableRight="@drawable/ic_file_upload_black_24dp"
+        android:layout_height="wrap_content" />
+
+
+
+
+</RelativeLayout>

@@ -551,6 +551,7 @@ public class Jasonparse {
         arrayList.clear();
 
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+
         String today = CARUtil.getToday();
         if (!countAttendance().equals("0")){
             try {
@@ -1093,6 +1094,8 @@ public class Jasonparse {
                         singleton1.setUnit(details[3]);
                         singleton1.setUnitId(details[5]);
                         singleton1.setStaffname(details[1]+" "+details[2]);
+                        singleton1.addStringSharedPreff(Constants.SESSION_TEACHER,details[0]+" "+details[5]);
+
                         break;
 
                     }

@@ -9,6 +9,7 @@ public class Constants {
     public static String MYPREF ="mypref";
 
     public static String SKIP ="0000";
+    public static String SESSION_TEACHER="TEACHER";
 
 
     //TABLES

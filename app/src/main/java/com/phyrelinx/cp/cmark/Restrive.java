@@ -77,6 +77,10 @@ public class Restrive extends AppCompatActivity {
                         status_txt.setText("Failed");
                         upload_txt.setEnabled(true);
                         break;
+                    case 5:
+                        status_txt.setText("Processing files....");
+                        break;
+
 
 
 
@@ -174,7 +178,10 @@ public class Restrive extends AppCompatActivity {
 
                                     File zipfile = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
                                     if (!zipfile.exists()) zipfile.mkdir();
-                                    status_txt.setText("Processing files....");
+                                    Message ms = new Message();
+                                    ms.what = 5;
+                                    mainThreadHandler.sendMessage(ms);
+
 
                                     //(zipfile,destination)
                                     ZipManager.unpackZip(getApplicationContext().getFilesDir().toString() + "/" + file, zipfile.toString());
@@ -184,7 +191,9 @@ public class Restrive extends AppCompatActivity {
                                     if (attfile.exists()) {
                                         new Jasonparse(getBaseContext()).resToreFIle(attfile,Constants.ATTENDANCE);
                                         success = true;
-                                        status_txt.setText("Done !");
+                                        Message mss = new Message();
+                                        mss.what = 3;
+                                        mainThreadHandler.sendMessage(mss);
 
                                     } else {
                                         status_txt.setText("Failed !");

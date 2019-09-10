@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     TextView download_sum,attend_sum,checkintable_sum,toilettable_sum,txt_id;
     TextView green_txt,red_txt,yellow_txt;
     ImageView imageView;
+    Integer count =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
                 if (!singleton1.getDatalist()) {
                     Thread thread = new Thread(new Runnable() {
                         @Override
@@ -225,14 +227,22 @@ public class MainActivity extends AppCompatActivity {
         check_in_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
-                    Intent intent = new Intent(MainActivity.this, ManageUser.class);
+
+                if (!singleton1.getPrefKey(Constants.SESSION_TEACHER).equals(Constants.CLOSE)) {
+                    if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
+                        Intent intent = new Intent(MainActivity.this, ManageUser.class);
+
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(MainActivity.this, Qrcodedetect.class);
+                        intent.putExtra("id", Constants.SKIP);
+                        startActivity(intent);
+                    }
+                }else{
+                    Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                     startActivity(intent);
                     finish();
-                }else{
-                    Intent intent = new Intent(MainActivity.this,Qrcodedetect.class);
-                    intent.putExtra("id",Constants.SKIP);
-                    startActivity(intent);
                 }
             }
         });
@@ -311,6 +321,19 @@ public class MainActivity extends AppCompatActivity {
         });
         thread.start();
 
+    }
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(getBaseContext(),"Tap again to close the app",Toast.LENGTH_SHORT).show();
+        count++;
+        if (count==2) {
+            singleton1.addStringSharedPreff(Constants.SESSION_TEACHER,Constants.CLOSE);
+            finish();
+            System.exit(0);
+        }
+
+        // Otherwise defer to system default behavior.
+        // super.onBackPressed();
     }
 
 
