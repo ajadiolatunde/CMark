@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -33,7 +34,7 @@ public class ViewAttendanceCustomAdapter extends ArrayAdapter<Tag> implements Vi
     // View lookup cache
     private static class ViewHolder {
         TextView txtName;
-        TextView txtGroup;
+        TextView txtUpload;
         TextView txtDelete;
         TextView txtPhone;
         ImageView fingerenrol;
@@ -77,13 +78,16 @@ public class ViewAttendanceCustomAdapter extends ArrayAdapter<Tag> implements Vi
                 ImageView img = (ImageView)convertView.findViewById(R.id.imgedit);
                 TextView currentgrp = (TextView) convertView.findViewById(R.id.currenetgrptxt);
                 currentgrp.setText(dataModel.getParent());
+                File mPhotoFile = singleton1.getPhotoFile(dataModel.getTag_in());
+
 
                 Glide.with(getContext())
-                        .load(Constants.HTTP_URL_CHILDPHOTO+ids+".jpg")
+//                        .load(Constants.HTTP_URL_CHILDPHOTO+ids+".jpg")
+                        .load(mPhotoFile+".jpg")
                         .apply(new RequestOptions()
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .placeholder(R.drawable.ic_person_black_24dp)
-                                .circleCrop()
+//                                .circleCrop()
                                 .skipMemoryCache(true))
                         .into(img);
 
@@ -98,7 +102,10 @@ public class ViewAttendanceCustomAdapter extends ArrayAdapter<Tag> implements Vi
 
                 break;
 
-            case R.id.fingerEnroltxt:
+            case R.id.uploadtxt:
+                Toast.makeText(getContext(),dataModel.getId(),Toast.LENGTH_SHORT).show();
+                System.out.println("Tunde print attendace-----"+new Gson().toJson(dataModel));
+
 
 
                 break;
@@ -121,9 +128,9 @@ public class ViewAttendanceCustomAdapter extends ArrayAdapter<Tag> implements Vi
 
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.manageuser_row_item, parent, false);
+            convertView = inflater.inflate(R.layout.viewuser_row_item, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.txtGroup = (TextView) convertView.findViewById(R.id.grouptxt);
+            viewHolder.txtUpload = (TextView) convertView.findViewById(R.id.uploadtxt);
             viewHolder.txtDelete = (TextView) convertView.findViewById(R.id.viewdetailstxt);
             viewHolder.txtPhone = (TextView) convertView.findViewById(R.id.phoneEnroltxt);
 
@@ -155,9 +162,9 @@ public class ViewAttendanceCustomAdapter extends ArrayAdapter<Tag> implements Vi
         viewHolder.txtPhone.setTag(position);
         viewHolder.txtPhone.setText(dataModel.getPhone());
 
-        viewHolder.txtGroup.setText(dataModel.getId());
-        viewHolder.txtGroup.setOnClickListener(this);
-        viewHolder.txtGroup.setTag(position);
+        viewHolder.txtUpload.setText(dataModel.getId());
+        viewHolder.txtUpload.setOnClickListener(this);
+        viewHolder.txtUpload.setTag(position);
         viewHolder.fingerenrol.setOnClickListener(this);
         viewHolder.fingerenrol.setTag(position);
         // Return the completed view to render on screen

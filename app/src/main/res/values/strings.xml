@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">CMark</string>
     <string-array name="spinnergender">
-        <item>Male</item>
-        <item>Female</item>
+
+        <item>M</item>
+        <item>F</item>
     </string-array>
 </resources>

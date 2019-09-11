@@ -12,7 +12,8 @@ public class Tag implements Serializable{
     String parent,classroom,teacher;
     String tag_in,tag_out,tag_id;
 //    upload status;
-    Boolean status;
+    Boolean status = false;
+    String gender;
 
     Boolean checkstatus;
 
@@ -121,7 +122,13 @@ public class Tag implements Serializable{
         this.checkstatus = checkstatus;
     }
 
+    public String getGender() {
+        return gender;
+    }
 
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     public Boolean getStatus() {
         return status;
@@ -131,7 +138,7 @@ public class Tag implements Serializable{
         this.status = status;
     }
 
-    public Tag(String tagin,String tagid,String id,String parenttag,String device,String teacher,String telephone ,String age){
+    public Tag(String tagin,String tagid,String id,String parenttag,String device,String teacher,String telephone ,String age,String gender){
         this.tag_in=tagin;
         this.tag_out = "0";
         this.toilet_in ="0";
@@ -144,6 +151,7 @@ public class Tag implements Serializable{
         this.teacher = teacher;
         this.phone = telephone;
         this.age =age;
+        this.gender = gender.toUpperCase();
 
 
     }

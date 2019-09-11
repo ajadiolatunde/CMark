@@ -20,10 +20,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +63,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
     private static final int ARG_PHOTO_REQUEST =2;
     String previous =" ";
     Long tsLong;
+    Spinner genderSpinner;
     DataModel model;
     int count=0;
 
@@ -93,8 +96,11 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
 
         }
 
+
         singleton1 = Singleton1.getInstance(getApplicationContext());
         phoneedit = (EditText)findViewById(R.id.phoneCap);
+        genderSpinner =(Spinner)findViewById(R.id.genderSPinner);
+
         phoneedit.setText((!realid.equals(Constants.SKIP))?model.getPhone():" ");
 
         PackageManager packageManager = this.getPackageManager();
@@ -134,7 +140,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
                     if (pic_avalable) {
                         //use timestamp for non registered
                         String[] session = singleton1.getPrefKey(Constants.SESSION_TEACHER).split(" ");
-                        tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1]);
+                        tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1],(String)genderSpinner.getSelectedItem());
                         String all = new Gson().toJson(tag,Tag.class);
                         if (new Jasonparse(getBaseContext()).canTakeAttendance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid)) {
                             new Jasonparse(getBaseContext()).checkIn(child, parent);
@@ -312,6 +318,16 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         boolean status = false;
         if (phoneedit.getText().length()>10 )status =true;
         return status;
+    }
+
+    private boolean checkGender(){
+        boolean gen=false;
+        int value = genderSpinner.getSelectedItemPosition();
+        System.out.println("Tunde ---value---"+value);
+        if (value==0){
+            return gen;
+        }
+        return true;
     }
 
     @Override
