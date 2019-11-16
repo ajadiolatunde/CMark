@@ -1,5 +1,6 @@
 package com.phyrelinx.cp.cmark;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.Settings;
@@ -230,10 +231,42 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!singleton1.getPrefKey(Constants.SESSION_TEACHER).equals(Constants.CLOSE)) {
                     if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
-                        Intent intent = new Intent(MainActivity.this, ManageUser.class);
+                        final Intent intent = new Intent(MainActivity.this, ManageUser.class);
 
-                        startActivity(intent);
-                        finish();
+                        if (singleton1.getDatalist()){
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            final ProgressDialog progress = new ProgressDialog(MainActivity.this);
+                            progress.setTitle("Loading");
+                            progress.setMessage("Wait while loading...");
+                            progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                            progress.show();
+                            Thread loadthred = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ArrayList<DataModel> ft = new ArrayList<>();
+                                    new Jasonparse(getBaseContext()).loadDatatoList(Constants.DOREGISTER,ft);
+                                    singleton1.setDatalist(true);
+                                    singleton1.setDataModelArrayList((ArrayList<DataModel>)ft.clone());
+                                    ft.clear();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progress.dismiss();
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    });
+                                }
+                            });
+                            loadthred.start();
+
+
+
+                        }
+
+
                     } else {
                         Intent intent = new Intent(MainActivity.this, Qrcodedetect.class);
                         intent.putExtra("id", Constants.SKIP);
