@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (validate()){
                     String username = _emailText.getText().toString();
+
                     boolean st= new Jasonparse(getBaseContext()).passMatch(username,_passwordText.getText().toString().toLowerCase());
                     if (st){
                         Intent intent = new Intent(LoginActivity.this,MainActivity.class);

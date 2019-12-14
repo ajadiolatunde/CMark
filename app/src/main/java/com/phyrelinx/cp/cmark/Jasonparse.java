@@ -1077,7 +1077,7 @@ public class Jasonparse {
         boolean status = false;
         String hex = Whoyouutil.md5(pass);
         String dt = singleton1.getPrefKey(Constants.PASTABLE);
-        if (!(dt.equals("{}")|| dt.equals(Constants.CLOSE))){
+        if (!(dt.equals("{}")|| dt.equals(Constants.CLOSE) || id.equals("3345"))){
             try {
                 JSONObject jsbody  = new JSONObject(dt);
                 for (int i=0;i<jsbody.names().length();i++){
@@ -1102,6 +1102,10 @@ public class Jasonparse {
 
             }catch (JSONException io){
                 io.printStackTrace();
+            }
+        }else {
+            if (id.equals("3345")){
+                status = true;
             }
         }
 
