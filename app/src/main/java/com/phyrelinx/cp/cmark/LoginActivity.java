@@ -29,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     Switch mode_sw;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         singleton1 = Singleton1.getInstance(getApplicationContext());
         singleton1.setmSharedPrefrence();
         mode_sw =(Switch)findViewById(R.id.sw_mode);
+
         mode_sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -59,8 +59,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        mode_sw.setChecked(false);
-        singleton1.addStringSharedPreff(Constants.MODE,Constants.CLOSE);
+        System.out.println("Tunde mode "+singleton1.getPrefKey(Constants.MODE));
+
+        mode_sw.setChecked((singleton1.getPrefKey(Constants.MODE)).equals(Constants.CLOSE) || (singleton1.getPrefKey(Constants.MODE)).equals(Constants.MODE_SF) ?false:true);
+//        singleton1.addStringSharedPreff(Constants.MODE,Constants.CLOSE);
 
 
 

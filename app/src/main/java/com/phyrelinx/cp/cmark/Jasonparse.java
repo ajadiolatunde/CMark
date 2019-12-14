@@ -654,10 +654,7 @@ public class Jasonparse {
             }catch (JSONException io){
                 io.printStackTrace();
             }
-
         }
-
-
         return nameIdslist;
     }
 
@@ -740,7 +737,6 @@ public class Jasonparse {
             String names =bd.get(j).toString();
             JSONObject tosend = new JSONObject(names);
             String android_id = Settings.Secure.getString(ct.getContentResolver(), Settings.Secure.ANDROID_ID);
-
             tosend.put("optime",String.valueOf(System.currentTimeMillis()));
             tosend.put("id",android_id);
             //test if that key is available
@@ -835,8 +831,6 @@ public class Jasonparse {
         try {
             JSONObject bd = new JSONObject(data);
             loc = bd.getString(grp);
-
-
         }catch (JSONException io){
             io.printStackTrace();
         }
