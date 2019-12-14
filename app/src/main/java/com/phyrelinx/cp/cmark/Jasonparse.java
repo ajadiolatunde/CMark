@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 public class Jasonparse {
     Context context;
@@ -653,10 +654,7 @@ public class Jasonparse {
             }catch (JSONException io){
                 io.printStackTrace();
             }
-
         }
-
-
         return nameIdslist;
     }
 
@@ -739,7 +737,6 @@ public class Jasonparse {
             String names =bd.get(j).toString();
             JSONObject tosend = new JSONObject(names);
             String android_id = Settings.Secure.getString(ct.getContentResolver(), Settings.Secure.ANDROID_ID);
-
             tosend.put("optime",String.valueOf(System.currentTimeMillis()));
             tosend.put("id",android_id);
             //test if that key is available
@@ -794,13 +791,14 @@ public class Jasonparse {
         }else {
             try {
                 JSONObject body = new JSONObject(regdata);
-                for(int i = 0 ;i<body.names().length();i++){
-                    String id = (String)body.names().get(i);
-
-                    JSONObject ct = body.getJSONObject(id);
+                Iterator<String> keys = body.keys();
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                    if (body.get(key) instanceof JSONObject) {
+                        JSONObject ct = body.getJSONObject(key);
                     String md = (ct.has("middlename"))?ct.getString("middlename"):ct.getString("middle");
 
-                    String name = ct.getString("firstname")+" "+md+" "+ct.getString("lastname");
+                    //String name = ct.getString("firstname")+" "+md+" "+ct.getString("lastname");
                     String gender =ct.getString("gender");
                     String phone = "00000000000";
 
@@ -809,10 +807,12 @@ public class Jasonparse {
                     String teacher = "0000";
                     if (ct.has("teacherid")) teacher=ct.getString("teacherid");
 
-                    DataModel detailsModel = new DataModel(ct.getString("firstname"),md,ct.getString("lastname"),id,gender,(ct.has("dob"))?ct.getString("dob"):"000000",phone,teacher);
+                    DataModel detailsModel = new DataModel(ct.getString("firstname"),md,ct.getString("lastname"),key,gender,(ct.has("dob"))?ct.getString("dob"):"000000",phone,teacher);
                     arrayList.add(detailsModel);
-                   // System.out.println("Tunde list "+id+" "+name);
+
+                    }
                 }
+
             }catch (JSONException io){
                 io.printStackTrace();
             }
@@ -831,8 +831,6 @@ public class Jasonparse {
         try {
             JSONObject bd = new JSONObject(data);
             loc = bd.getString(grp);
-
-
         }catch (JSONException io){
             io.printStackTrace();
         }
