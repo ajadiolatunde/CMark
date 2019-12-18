@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (!new Jasonparse(getBaseContext()).iftoday()){
                     File fi = new File(getFilesDir(),Constants.MAPPHOTODIRR);
+                    if (!fi.exists())fi.mkdir();
                     System.out.println("Tunde len of photo len  "+fi.listFiles().length);
                     for (File df: fi.listFiles()){
                         df.delete();

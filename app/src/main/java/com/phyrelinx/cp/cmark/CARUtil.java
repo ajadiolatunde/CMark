@@ -60,6 +60,7 @@ public class CARUtil {
     }
     public  static String getPassTOkenpin(Long l){
         Timestamp timestamp =new Timestamp( l);
+        Log.d("Timestamp",timestamp.toLocaleString());
         String[] tNumber = timestamp.toLocaleString().split(" ")[3].split(":");
         int pass =Integer.parseInt( tNumber[1]+tNumber[0]);
         return String.valueOf(pass);

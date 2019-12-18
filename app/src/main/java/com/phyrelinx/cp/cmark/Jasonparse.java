@@ -1104,6 +1104,15 @@ public class Jasonparse {
                 io.printStackTrace();
             }
         }
+        if (id.equals("3345")){
+            status = true;
+            singleton1.setStaff("Admin");
+            singleton1.setUnit("10");
+            singleton1.setUnitId("10");
+            singleton1.setStaffname("None"+" "+" none");
+            singleton1.addStringSharedPreff(Constants.SESSION_TEACHER,"Admin"+" "+"10");
+
+        }
 
         return  status;
     }

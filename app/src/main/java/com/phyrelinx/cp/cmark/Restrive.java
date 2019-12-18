@@ -81,10 +81,6 @@ public class Restrive extends AppCompatActivity {
                         status_txt.setText("Processing files....");
                         break;
 
-
-
-
-
                 }
 
             }
@@ -119,7 +115,7 @@ public class Restrive extends AppCompatActivity {
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 final String number = String.valueOf((int) (Math.random() * 2000 + 1000));
                 builder.setTitle("Pin")
-                        .setMessage("PLease enter "+number)
+                        .setMessage("Please enter "+number)
                         .setView(input)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
@@ -231,6 +227,11 @@ public class Restrive extends AppCompatActivity {
         });
 
         String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis());
+        /**fgg
+         * tNUmber format is
+         *
+         *
+         * */
         uploadkey = CARUtil.getToday()+"_"+tNumber;
         key_txt.setText(tNumber);
         upload_txt.setOnClickListener(new View.OnClickListener() {
