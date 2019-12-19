@@ -15,17 +15,28 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class Restrive extends AppCompatActivity {
+public class Restrive extends AppCompatActivity implements AsynTaskCallback {
     Singleton1 singleton1;
     String uploadkey;
     TextView key_txt,status_txt,upload_txt,download_txt;
@@ -35,10 +46,14 @@ public class Restrive extends AppCompatActivity {
     private Handler mainThreadHandler;
     Thread tr;
     Handler mHandler;
+    ListView listView;
+    JSONObject new_content;
     ProgressDialog mProgressBar;
+    List<ZipFIlenames> filelist = new ArrayList<>();
+    ArrayAdapter<ZipFIlenames> adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         singleton1 = Singleton1.getInstance(getApplicationContext());
 
@@ -49,8 +64,106 @@ public class Restrive extends AppCompatActivity {
         cache_btn = (Button)findViewById(R.id.clear_btn);
         cache_btn.setEnabled(false);
         download_txt =(TextView)findViewById(R.id.ret_download);
+        listView = (ListView)findViewById(R.id.zipfile_view);
         download_edit = (EditText)findViewById(R.id.ret_edit);
-        download_txt.setEnabled(false);
+        download_txt.setEnabled(true);
+        adapter = new ArrayAdapter(getBaseContext(),android.R.layout.simple_list_item_2,android.R.id.text1,filelist){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                ZipFIlenames fIlenames = (ZipFIlenames) this.getItem(position);
+                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+                text2.setTextColor(getResources().getColor(R.color.aluminum));
+
+                text1.setText(String.valueOf(position+1)+". -"+fIlenames.getDeviceid());
+                text2.setText(fIlenames.getTime());
+                return view;
+            }
+        };
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final ZipFIlenames fIlenames= (ZipFIlenames) parent.getItemAtPosition(position);
+                Toast.makeText(getBaseContext(),fIlenames.getFilename(),Toast.LENGTH_SHORT).show();
+                mProgressBar= new ProgressDialog(Restrive.this);
+                download_edit.setEnabled(false);
+                //status_txt.setText("Downloading files ......");
+                mProgressBar.setMax(100);
+                mProgressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressBar.show();
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final String file = fIlenames.getFilename();
+                        final boolean status =CARUtil.downloadsftp(Constants.SSHPATHRESTORE+"/"+file,file,getBaseContext(),mProgressBar);
+                        final Handler handler = new Handler(Looper.getMainLooper());
+
+                        if (status) {
+
+
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    File zipfile = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
+                                    if (!zipfile.exists()) zipfile.mkdir();
+                                    Message ms = new Message();
+                                    ms.what = 5;
+                                    mainThreadHandler.sendMessage(ms);
+
+
+                                    //(zipfile,destination)
+                                    ZipManager.unpackZip(getApplicationContext().getFilesDir().toString() + "/" + file, zipfile.toString());
+                                    File attfile = new File(zipfile,  "att.att");
+
+
+                                    if (attfile.exists()) {
+                                        new Jasonparse(getBaseContext()).resToreFIle(attfile,Constants.ATTENDANCE);
+                                        success = true;
+                                        Message mss = new Message();
+                                        mss.what = 6;
+                                        mainThreadHandler.sendMessage(mss);
+
+                                    } else {
+                                        status_txt.setText("Failed !");
+
+
+                                    }
+                                    if (success) {
+                                        Toast.makeText(getBaseContext(), "File restored ", Toast.LENGTH_SHORT).show();
+                                        new Jasonparse(getBaseContext()).update_zpdb(fIlenames.getTime());
+                                        adapter.remove(fIlenames);
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(getBaseContext(), "File not found ", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                    mProgressBar.dismiss();
+
+
+                                }
+                            });
+                        }else {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Toast.makeText(getBaseContext(), "Download failed, try again ", Toast.LENGTH_SHORT).show();
+                                    status_txt.setText("Failed ");
+                                    download_edit.setEnabled(true);
+                                    mProgressBar.dismiss();
+
+                                }
+                            });
+                        }
+
+
+                    }
+                });
+                t.start();
+            }
+        });
         // This handler is used to handle child thread message from main thread message queue.
         mainThreadHandler = new Handler(){
             @Override
@@ -65,7 +178,7 @@ public class Restrive extends AppCompatActivity {
                         break;
                     case 3:
                         Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
-                            cache_btn.setEnabled(true);
+                        cache_btn.setEnabled(true);
                         status_txt.setText("Done...");
                         break;
 
@@ -79,6 +192,12 @@ public class Restrive extends AppCompatActivity {
                         break;
                     case 5:
                         status_txt.setText("Processing files....");
+                        break;
+
+                    case 6:
+                        Toast.makeText(getBaseContext(),"Success",Toast.LENGTH_SHORT).show();
+                        cache_btn.setEnabled(false);
+                        status_txt.setText("Done...");
                         break;
 
                 }
@@ -107,6 +226,7 @@ public class Restrive extends AppCompatActivity {
                 }
             }
         });
+
         cache_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,82 +278,22 @@ public class Restrive extends AppCompatActivity {
                 mProgressBar.setMax(100);
                 mProgressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mProgressBar.show();
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final String file = CARUtil.getToday()+"_"+download_edit.getText().toString()+".zip";
-                        final boolean status =CARUtil.downloadsftp(Constants.SSHPATHRESTORE+"/"+file,file,getBaseContext(),mProgressBar);
-                        final Handler handler = new Handler(Looper.getMainLooper());
+                Log.d("Tunde--zip--",singleton1.getPrefKey(Constants.ZIP_DOWNLOAD_DB));
 
-                        if (status) {
-
-
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    File zipfile = new File(getApplicationContext().getFilesDir().toString(), Constants.MAPPHOTODIRR);
-                                    if (!zipfile.exists()) zipfile.mkdir();
-                                    Message ms = new Message();
-                                    ms.what = 5;
-                                    mainThreadHandler.sendMessage(ms);
-
-
-                                    //(zipfile,destination)
-                                    ZipManager.unpackZip(getApplicationContext().getFilesDir().toString() + "/" + file, zipfile.toString());
-                                    File attfile = new File(zipfile,  "att.att");
-
-
-                                    if (attfile.exists()) {
-                                        new Jasonparse(getBaseContext()).resToreFIle(attfile,Constants.ATTENDANCE);
-                                        success = true;
-                                        Message mss = new Message();
-                                        mss.what = 3;
-                                        mainThreadHandler.sendMessage(mss);
-
-                                    } else {
-                                        status_txt.setText("Failed !");
-
-
-                                    }
-                                    if (success) {
-                                        Toast.makeText(getBaseContext(), "File restored ", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(getBaseContext(), "File not found ", Toast.LENGTH_SHORT).show();
-
-                                    }
-
-                                }
-                            });
-                        }else {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(getBaseContext(), "Download failed, try again ", Toast.LENGTH_SHORT).show();
-                                    status_txt.setText("Failed ");
-                                    download_edit.setEnabled(true);
-
-                                }
-                            });
-                        }
-
-
-                    }
-                });
-                t.start();
+                getUploadedZip();
 
 
             }
         });
 
-        String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis());
+        String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis(),true,getBaseContext());
         /**fgg
          * tNUmber format is
          *
          *
          * */
         uploadkey = CARUtil.getToday()+"_"+tNumber;
-        key_txt.setText(tNumber);
+        key_txt.setText(tNumber.split("_")[1]);
         upload_txt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -259,6 +319,52 @@ public class Restrive extends AppCompatActivity {
         //boolean status =CARUtil.downloadsftp(Constants.SSHPATHRESTORE+"/"+"PASS"+".zip","PASS.zip",getApplicationContext());
 
 
+
+    }
+    @Override
+    public  void processFinish(String str){
+        mProgressBar.dismiss();
+        if (!(str.contains(Constants.CLOSE) || str.contains("Cant"))){
+            Log.d("Tunde download ===",str);
+            try{
+                JSONObject body = new JSONObject(str);
+                if (body.has("message")){
+                    JSONObject content = body.getJSONObject("message");
+                    new_content = new JSONObject();
+                    Iterator<String> deviceKeys = content.keys();
+                    if (content.names().length() > 0)filelist.clear();
+                    while (deviceKeys.hasNext()){
+                        String key = deviceKeys.next();
+                        if (!new Jasonparse(getBaseContext()).isZipDOwnloaded(content.getString(key))) {
+                            ZipFIlenames fIlenames = new ZipFIlenames();
+                            fIlenames.setDeviceid(key);
+                            fIlenames.setTime(content.getString(key));
+                            Log.d("Tunde--====",fIlenames.getFilename());
+                            filelist.add(fIlenames);
+                        }
+
+                    }
+                    adapter.notifyDataSetChanged();
+                    Log.d("Tunde --",content.toString());
+                }else {
+                    Log.d("Tunde --","No message");
+
+                }
+            }catch (JSONException io){
+                io.printStackTrace();
+            }
+
+        }else{
+            Log.d("Tunde download f ===",str);
+
+        }
+
+    }
+
+    private void getUploadedZip(){
+        boolean status = false;
+        TrackAsyncdata asyncdata = new TrackAsyncdata(Constants.HTTP_URL_DOWNLOADS, "key", Restrive.this, this, this);
+        asyncdata.execute();
 
     }
 

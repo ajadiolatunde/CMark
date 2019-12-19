@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis());
+                                String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis(),false,getBaseContext());
                                 if (input.getText().toString().equals("2019") || input.getText().toString().equals(tNumber)) {
 
                                     singleton1.addStringSharedPreff(Constants.CHECKINTABLE, Constants.CLOSE);
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis());
+                                    String tNumber = CARUtil.getPassTOkenpin(System.currentTimeMillis(),false,getBaseContext());
                                     if (input.getText().toString().equals("2019") || input.getText().toString().equals(tNumber)) {
 
                                         startActivity(intent);

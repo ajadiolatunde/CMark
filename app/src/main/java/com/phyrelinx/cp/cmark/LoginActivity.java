@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         singleton1 = Singleton1.getInstance(getApplicationContext());
         singleton1.setmSharedPrefrence();
         mode_sw =(Switch)findViewById(R.id.sw_mode);
-
+        Log.d("Tunde passtoken ",CARUtil.getPassTOkenpin(System.currentTimeMillis(),true,getBaseContext()));
         mode_sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

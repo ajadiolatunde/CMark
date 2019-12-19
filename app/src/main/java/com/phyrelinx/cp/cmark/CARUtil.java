@@ -58,12 +58,14 @@ public class CARUtil {
             in.close();
         }
     }
-    public  static String getPassTOkenpin(Long l){
+    public  static String getPassTOkenpin(Long l,boolean foruploads,Context context){
         Timestamp timestamp =new Timestamp( l);
         Log.d("Timestamp",timestamp.toLocaleString());
         String[] tNumber = timestamp.toLocaleString().split(" ")[3].split(":");
+        int uploads =Integer.parseInt( tNumber[0]+tNumber[1]+tNumber[2]);
+
         int pass =Integer.parseInt( tNumber[1]+tNumber[0]);
-        return String.valueOf(pass);
+        return (foruploads)?Whoyouutil.getDeviceId(context)+"_"+String.valueOf(+uploads):String.valueOf(pass);
     }
 
     public static boolean download(String data, String remote, Context context,AsynTaskCallback asynTaskCallback){
@@ -245,6 +247,8 @@ public class CARUtil {
     public static boolean uploadsftp(String localfilename, String destinationfullpath, final Context context){
         Singleton1 singleton1 = Singleton1.getInstance(context);
         Boolean success = false;
+        Log.d("Tunde ---local--",localfilename);
+        Log.d("Tunde---des--",destinationfullpath);
 
 
         try {

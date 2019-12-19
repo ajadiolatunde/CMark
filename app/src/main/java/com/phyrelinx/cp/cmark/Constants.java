@@ -39,7 +39,7 @@ public class Constants {
 
     //SETTINGS
     //public static String HTTP_="http://134.209.69.87:9900";
-    public static String HTTP_="http://192.168.0.100:9900";
+    public static String HTTP_="http://192.168.0.103:9900";
 
     public static String HTTP_URL_DATA=HTTP_+"/nsvr/save/photo";
     public static String HTTP_URL_CHILDPHOTO=HTTP_+"/nsvr/images/";
@@ -47,6 +47,8 @@ public class Constants {
     public static String HTTP_URL_STAFFPHOTO=HTTP_+"/staff/images/";
     public static String HTTP_URL_DREGISTER=HTTP_+"/dreg/register";
     public static String HTTP_URL_DPASS=HTTP_+"/staff/dpas/register";
+    public static String HTTP_URL_DOWNLOADS=HTTP_+"/dloads/zip";
+
 
     public static String HTTP_URL_UPATTENDANCE=HTTP_+"/child/upattendance/register";
 
@@ -65,9 +67,9 @@ public class Constants {
     public static String DEFAULTPINTABLE ="PIN";
 
 
-    public static String FTP_URL="192.168.0.100";
-    public static String FTP_USER="user";
-    public static String FTP_PASS="user123";
+    public static String FTP_URL="192.168.0.103";
+    public static String FTP_USER="olatunde";
+    public static String FTP_PASS="dannynoc";
 //Tables
     public static String FINGERS="FINGERS";
 
@@ -91,8 +93,12 @@ public class Constants {
 
 
     public static String MESSAGE="message";
-    public static String SSHPATHUPLOAD="/home/user/uploads";
-    public static String SSHPATHRESTORE="/home/user/uploads";
+    public static String SSHPATHUPLOAD="/home/olatunde/uploads";
+    public static String SSHPATHRESTORE="/home/olatunde/uploads";
+
+
+//    Retrive db
+    public static String ZIP_DOWNLOAD_DB="zddb";
 
 
 }

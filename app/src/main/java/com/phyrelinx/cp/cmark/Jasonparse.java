@@ -1147,5 +1147,61 @@ public class Jasonparse {
         return res;
     }
 
+    public void update_zpdb(String filename){
+        String data = singleton1.getPrefKey(Constants.ZIP_DOWNLOAD_DB);
+        if (data.equals(Constants.CLOSE) || data.equals("{}")){
+            try {
+                JSONObject body = new JSONObject();
+                JSONObject child = new JSONObject();
+
+                child.put(filename, String.valueOf(System.currentTimeMillis()));
+                body.put(CARUtil.getToday(),child);
+                singleton1.addStringSharedPreff(Constants.ZIP_DOWNLOAD_DB,body.toString());
+            }catch (JSONException ex){
+                ex.printStackTrace();
+            }
+        }else{
+            try{
+               JSONObject body = new JSONObject(data);
+                JSONObject child = new JSONObject();
+                child.put(filename, String.valueOf(System.currentTimeMillis()));
+               if (body.has(CARUtil.getToday())){
+                   JSONObject childd = body.getJSONObject(CARUtil.getToday());
+                   childd.put(filename, String.valueOf(System.currentTimeMillis()));
+                   body.put(CARUtil.getToday(),childd);
+               }else{
+                   body.put(CARUtil.getToday(),child);
+
+               }
+                singleton1.addStringSharedPreff(Constants.ZIP_DOWNLOAD_DB,body.toString());
+
+            }catch (JSONException io){
+
+            }
+
+        }
+    }
+
+    public boolean isZipDOwnloaded(String filename){
+        boolean status = false;
+        String data = singleton1.getPrefKey(Constants.ZIP_DOWNLOAD_DB);
+        if (data.equals(Constants.CLOSE) || data.equals("{}")){
+
+        }else{
+            try {
+                JSONObject body = new JSONObject(data);
+                if (body.has(CARUtil.getToday())){
+                    JSONObject child = body.getJSONObject(CARUtil.getToday());
+                    if (child.has(filename)){
+                        status = true;
+                    }
+                }
+            }catch (JSONException io){
+
+            }
+        }
+        return  status;
+    }
+
 
 }
