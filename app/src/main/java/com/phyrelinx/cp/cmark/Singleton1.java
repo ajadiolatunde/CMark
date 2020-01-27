@@ -327,12 +327,19 @@ class Singleton1 {
 //        }
         return  new File(externalFileDir.toString(),name);
     }
-
+//  Retrive todays attendance
     public JSONObject getJsonObject() {
+        /**
+         * @param
+         * @return todays attendace
+         */
         return jsonObject;
     }
-
+//    Load todays attendance
     public void setJsonObject(JSONObject jsonObject) {
+        /**
+         * @param todays attendance
+         */
         this.jsonObject = jsonObject;
     }
 
