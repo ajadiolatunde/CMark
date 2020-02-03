@@ -14,6 +14,12 @@
         android:layout_below="@+id/phoneCap"
         android:id="@+id/camera_view"
         />
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/btn_readagain"
+        android:text="Read again!"
+        android:background="@drawable/myfirst"
+        android:layout_height="wrap_content"/>
     <ImageView
         android:id="@+id/takepicture"
         android:layout_width="match_parent"

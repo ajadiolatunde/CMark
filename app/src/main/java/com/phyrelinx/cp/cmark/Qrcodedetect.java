@@ -41,6 +41,8 @@ import com.ortiz.touchview.TouchImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by olatunde on 11/10/17.
@@ -66,7 +68,9 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
     Spinner genderSpinner;
     DataModel model;
     int count=0;
-
+    boolean detectagain = true;
+    ArrayList<String> listofchild = new ArrayList<>();
+    Button readagain;
 
     Singleton1 singleton1;
     ImageButton imgbtn;
@@ -100,6 +104,14 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         singleton1 = Singleton1.getInstance(getApplicationContext());
         phoneedit = (EditText)findViewById(R.id.phoneCap);
         genderSpinner =(Spinner)findViewById(R.id.genderSPinner);
+        readagain = (Button)findViewById(R.id.btn_readagain);
+        readagain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                readagain.setText("Reading.....");
+                detectagain = true;
+            }
+        });
 
         phoneedit.setText((!realid.equals(Constants.SKIP))?model.getPhone():" ");
 
@@ -135,25 +147,38 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                barcodeDetector.release();
+
 
                 if (checkphone()){
                     if (pic_avalable) {
                         //use timestamp for non registered
+
+
                         String[] session = singleton1.getPrefKey(Constants.SESSION_TEACHER).split(" ");
-                        tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1],(String)genderSpinner.getSelectedItem());
-                        String all = new Gson().toJson(tag,Tag.class);
-                        if (new Jasonparse(getBaseContext()).canTakeAttendance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid)) {
-                            new Jasonparse(getBaseContext()).checkIn(child, parent);
-                            new Jasonparse(getBaseContext()).markAttendnance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, all);
-                            savebtn.setEnabled(false);
-                            cameraSource.stop();
-                            Intent intent1 = new Intent(Qrcodedetect.this,MainActivity.class);
-                            startActivity(intent1);
-                            finish();
-                        }else {
-                            Toast.makeText(getBaseContext(),"You have marked attendance today!  " ,Toast.LENGTH_SHORT).show();
+
+                        for (String child:listofchild) {
+                            if (child.startsWith("C")){
+                                tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1],(String)genderSpinner.getSelectedItem());
+                                String all = new Gson().toJson(tag,Tag.class);
+                                if (new Jasonparse(getBaseContext()).canTakeAttendance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid)) {
+                                    new Jasonparse(getBaseContext()).checkIn(child, parent);
+                                    new Jasonparse(getBaseContext()).markAttendnance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this)+"_"+child:realid, all);
+
+                                }else {
+                                    Toast.makeText(getBaseContext(),"You have marked attendance today!  " ,Toast.LENGTH_SHORT).show();
+
+                                }
+
+                            }
 
                         }
+                        savebtn.setEnabled(false);
+                        cameraSource.stop();
+                        Intent intent1 = new Intent(Qrcodedetect.this,MainActivity.class);
+                        startActivity(intent1);
+                        finish();
+
                         //System.out.println("Tunde ============== "+all);
 
                     }else {
@@ -226,40 +251,47 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
 
-                if (barcodes.size() != 0) {
+                if (barcodes.size() != 0 && detectagain) {
                     final MediaPlayer mp = MediaPlayer.create(Qrcodedetect.this, R.raw.ap);
                     barcodeInfo.post(new Runnable() {    // Use the post method of the TextView
                         public void run() {
                                 bcode = barcodes.valueAt(0).displayValue;
-                                if (!bcode.equals(previous)) {
-                                    if (bcode.startsWith("P")&& !parent.startsWith("P")) {
-                                        parent = bcode;
-                                        barcodeInfo.setText(parent);
-                                        mp.start();
-                                        previous = bcode;
-                                        bcode = " ";
-                                        count++;
-                                    }
-                                    if (bcode.startsWith("C") && !child.startsWith("C")) {
-                                        //check if used
-                                        mp.start();
-                                        if (new Jasonparse(getBaseContext()).canUsechildTag(bcode)) {
-                                            child = bcode;
-                                            previous = bcode;
-                                            mp.start();
-                                            barcodeInfo2.setText(child);
 
-                                            bcode = " ";
-                                            count++;
+
+                                    if (bcode.startsWith("C") || bcode.startsWith("P") && !isAdded(bcode)) {
+                                        //check if used
+                                        if (bcode.startsWith("P") && isNotAvailable() ) {
+                                            barcodeInfo.setText(bcode);
+                                            listofchild.add(bcode);
+                                            Toast.makeText(getBaseContext(), String.valueOf(listofchild.size()), Toast.LENGTH_SHORT).show();
+                                            detectagain = false;
+                                            previous = bcode;
+                                            parent = bcode;
+                                            mp.start();
+                                            readagain.setText("Read again?");
+
                                         }else{
-                                            Toast.makeText(getBaseContext(),"Tag is used already!",Toast.LENGTH_SHORT).show();
+                                            if (new Jasonparse(getBaseContext()).canUsechildTag(bcode) && bcode.startsWith("C") && !isAdded(bcode)) {
+                                                mp.start();
+                                                listtostring();
+                                                barcodeInfo2.setText(listtostring());
+                                                listofchild.add(bcode);
+                                                previous = bcode;
+                                                detectagain = false;
+                                                readagain.setText("Read again?");
+
+                                                Toast.makeText(getBaseContext(), String.valueOf(listofchild.size()), Toast.LENGTH_SHORT).show();
+
+
+                                            } else {
+                                                Toast.makeText(getBaseContext(), (bcode.startsWith("C"))?"Tag is used already!":"", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     }
-                                }
-                                if (count==2){
+
+                                if (listofchild.size()>1 && !isNotAvailable()){
                                    // bcode = previous;
 
-                                    barcodeDetector.release();
                                     //enable save
                                     savebtn.setVisibility(View.VISIBLE);
 
@@ -270,10 +302,54 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
                 }
 
 
+
             }
         });
 
 
+
+    }
+
+    private  boolean isAdded(String newchild){
+        listtostring();
+        boolean found  = false;
+        if (listofchild.size() > 0){
+            for (String child:listofchild) {
+                if (child.equals(newchild)){
+                    found = true;
+                    break;
+                }
+            }
+
+        }
+
+        return found;
+    }
+
+
+    private String listtostring(){
+        String all = "[ ";
+        for (String p:listofchild
+        ) {
+           all += p+" ";
+        }
+        System.out.println("Tunde-------0----"+all+"]");
+        return all;
+    }
+
+    private boolean isNotAvailable(){
+       listtostring();
+        boolean status = true;
+        if (listofchild.size() > 0){
+            for (String user:listofchild) {
+
+                if (user.contains("P")) status = false;
+
+            }
+
+        }
+
+        return status;
 
     }
 
@@ -283,7 +359,6 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
             return;
         }
         if(requestCode == ARG_PHOTO_REQUEST ){
-            System.out.println("Tunde   arg photo ready");
             PictureUtils.resize_compress(this, String.valueOf(tsLong));
             //phyLocation.setPhoto("Yes");
             upDatePhotoView();
