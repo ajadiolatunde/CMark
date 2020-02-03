@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         download_sum.setText(new Jasonparse(getBaseContext()).countUsers());
+        System.out.println("Tunde checkin-----"+singleton1.getPrefKey(Constants.CHECKINTABLE));
+
         download_sum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,7 +193,11 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-                async.execute();
+//                async.execute();
+                new Jasonparse(getApplicationContext()).refrsh();
+                checkintable_sum.setText(new Jasonparse(getBaseContext()).countCheckIn_toilet(Constants.CHECKINTABLE));
+
+
             }
         });
 
@@ -280,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         reportbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -337,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
         if (!new Jasonparse(getBaseContext()).countCheckIn_toilet(Constants.TOILETTABLE).equals("0"))red_txt.setVisibility(View.VISIBLE);
         if (!new Jasonparse(getBaseContext()).countCheckIn_toilet(Constants.CHECKINTABLE).equals("0"))yellow_txt.setVisibility(View.VISIBLE);
 
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -359,6 +367,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Toast.makeText(getBaseContext(),"Tap again to close the app",Toast.LENGTH_SHORT).show();
+        System.out.println("Tap again");
+
         count++;
         if (count==2) {
             singleton1.addStringSharedPreff(Constants.SESSION_TEACHER,Constants.CLOSE);

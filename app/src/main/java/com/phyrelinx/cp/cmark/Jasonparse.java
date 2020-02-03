@@ -76,23 +76,25 @@ public class Jasonparse {
 
     //checkin  table
     public void checkIn(String child_tag,String parent){
-        String data = singleton1.getPrefKey(Constants.CHECKINTABLE);
-        if (data.equals("{}") || data.equals(Constants.CLOSE)){
-            JSONObject body = new JSONObject();
-            try {
-                body.put(child_tag, parent);
-                singleton1.addStringSharedPreff(Constants.CHECKINTABLE,body.toString());
-            }catch (JSONException io){
-                io.printStackTrace();
-            }
+        if (!child_tag.contains("X")) {
+            String data = singleton1.getPrefKey(Constants.CHECKINTABLE);
+            if (data.equals("{}") || data.equals(Constants.CLOSE)) {
+                JSONObject body = new JSONObject();
+                try {
+                    body.put(child_tag, parent);
+                    singleton1.addStringSharedPreff(Constants.CHECKINTABLE, body.toString());
+                } catch (JSONException io) {
+                    io.printStackTrace();
+                }
 
-        }else{
-            try{
-                JSONObject oldbody = new JSONObject(data);
-                oldbody.put(child_tag,parent);
-                singleton1.addStringSharedPreff(Constants.CHECKINTABLE,oldbody.toString());
-            }catch (JSONException io){
+            } else {
+                try {
+                    JSONObject oldbody = new JSONObject(data);
+                    oldbody.put(child_tag, parent);
+                    singleton1.addStringSharedPreff(Constants.CHECKINTABLE, oldbody.toString());
+                } catch (JSONException io) {
 
+                }
             }
         }
     }
@@ -161,17 +163,29 @@ public class Jasonparse {
     //checkout and update mark attendance
     // parents card first
 
+
+
     public void  checkOut(String child_tag){
         /**
          * @param  tag_id
+         *
          */
         String data = singleton1.getPrefKey(Constants.CHECKINTABLE);
+        String ch_tag = (child_tag.contains("X"))?child_tag.replace("X",""):child_tag;
 
             try{
                 JSONObject oldbody = new JSONObject(data);
-                oldbody.remove(child_tag);
-                singleton1.addStringSharedPreff(Constants.CHECKINTABLE,oldbody.toString());
+                if (oldbody.has(ch_tag)) {
+                    oldbody.remove(ch_tag);
+                    System.out.println("Tunde reomve from checkintable-----"+ch_tag);
+                    singleton1.addStringSharedPreff(Constants.CHECKINTABLE,oldbody.toString());
+                }else{
+                    System.out.println("Tunde ----no child tag-----"+ch_tag);
+
+                }
             }catch (JSONException io){
+                System.out.println("Tunde ----no child tag-----"+child_tag);
+
             }
     }
 
@@ -344,6 +358,33 @@ public class Jasonparse {
     }
 
     //update table attendance
+    public void refrsh(){
+        String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+        String today = CARUtil.getToday();
+        try {
+            JSONObject oldbody = new JSONObject(data);
+            JSONObject today_body = oldbody.getJSONObject(today);
+            Iterator<String> keys = today_body.keys();
+            while(keys.hasNext()){
+                String key = keys.next();
+                Tag tg = new Gson().fromJson(today_body.getString(key).toString(),Tag.class);
+                if (!tg.tag_id.contains("X")){
+                    checkIn(tg.tag_id,tg.parent);
+                    System.out.println("Tunde --no----"+tg.tag_id);
+                }else{
+                    System.out.println("Tunde --x----"+tg.tag_id);
+
+                }
+            }
+
+
+        }catch (JSONException ex){
+            ex.printStackTrace();
+            System.out.println("Tunde ---error---");
+
+
+        }
+    }
 
     public void updateAttendnance(String realid,Tag tag,boolean out){
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
@@ -398,6 +439,7 @@ public class Jasonparse {
 
     }
 
+
     public void resToreFIle(File file,String table){
         String data = singleton1.getPrefKey(Constants.ATTENDANCE);
 
@@ -406,6 +448,7 @@ public class Jasonparse {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             Object obj = parser.parse(reader);
             org.json.simple.JSONObject employeeList = (org.json.simple.JSONObject) obj;
+
             if (!countAttendance(employeeList.toJSONString()).equals("0") ){
 //                Get todays table from file
                 JSONObject  jsonObject = singleton1.getJsonObject();
@@ -425,14 +468,7 @@ public class Jasonparse {
 //                                check if remote tag exist and is  checkout out
                             body_fortoday.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
                         }
-//                            for (int i = 0; i < jsonObject.names().length(); i++) {
-//
-//                                String relId = (String) jsonObject.names().get(i);
-//                                Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
-//                                if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
-////                                check if remote tag exist and is  checkout out
-//                                body_fortoday.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
-//                            }
+
                         body.put(CARUtil.getToday(), body_fortoday);
                         singleton1.setCount(String.valueOf(body_fortoday.names().length()));
                         singleton1.addStringSharedPreff(Constants.ATTENDANCE,body.toString());
@@ -447,48 +483,60 @@ public class Jasonparse {
                                 keys = jsonObject.keys();
                                 while (keys.hasNext()){
                                     String relId = keys.next();
+                                    System.out.println("Tunde ------key----"+relId);
+
                                     Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
                                     if (today_body.has(relId)) {
 
                                         Tag local_tg = new Gson().fromJson(today_body.getString(relId), Tag.class);
-//                                    check if remote has checked out
-                                        if (!tg.getTag_out().equals("0") && local_tg.getTag_out().equals("0")) {
-                                            checkOut(tg.getTag_id());
-                                            today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
+                                        System.out.println("Tunde -----local----"+local_tg.toString());
+                                        System.out.println("Tunde -----remote----"+tg.toString());
+                                        if (tg.tag_id.contains("X")) {
+                                            if (local_tg.tag_id.contains("X")){
+                                                checkOut(tg.getTag_id());
 
+                                                System.out.println("Tunde -----out----");
+
+                                            }else {
+                                                checkOut(tg.getTag_id());
+                                                today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
+
+                                                System.out.println("Tunde ---now--checkout----");
+
+                                            }
+                                        }else {
+                                            if (local_tg.tag_id.contains("X")){
+                                                checkOut(tg.getTag_id());
+
+                                                System.out.println("Tunde -----already checkout----");
+
+
+                                            }else {
+                                                System.out.println("Tunde -----still in----");
+
+                                            }
                                         }
+
+
+
+//                                    check if remote has checked out
+//                                        if (!tg.getTag_out().equals("0") && local_tg.getTag_out().equals("0")) {
+//
+//                                            System.out.println("Tunde ------checkout----"+tg.tag_id);
+//                                            checkOut(tg.getTag_id());
+//
+//                                        }
                                     }
 
                                     else{
+                                        System.out.println("Tunde ------checkin---"+tg.tag_id);
+
                                         checkIn(tg.tag_id,tg.parent);
                                         today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
                                     }
 
                                 }
 
-
-//                                for (int i = 0; i < jsonObject.names().length(); i++) {
-//                                    check if remote tag exist and is  checkout out
-//                                    String relId = (String) jsonObject.names().get(i);
-//                                    Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
-//                                    boolean oldhas = false;
-//                                    if (oldbody.has(relId)) {
-//
-//                                        Tag local_tg = new Gson().fromJson(oldbody.getString(relId), Tag.class);
-////                                    check if remote has checked out
-//                                        if (!tg.getTag_out().equals("0") && local_tg.getTag_out().equals("0")) {
-//                                            checkOut(tg.getTag_id());
-//                                            today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
-//
-//                                        }
-//                                    }
-//
-//                                    else{
-//                                        checkIn(tg.tag_id,tg.parent);
-//                                        today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
-//                                    }
-//
-//                                }
 
                                 oldbody.put(CARUtil.getToday(), today_body);
                                 singleton1.setCount(String.valueOf(today_body.names().length()));
@@ -503,12 +551,6 @@ public class Jasonparse {
                                     if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
                                     today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
                                 }
-//                                for (int i = 0; i < jsonObject.names().length(); i++) {
-//                                    String relId = (String) jsonObject.names().get(i);
-//                                    Tag tg = new Gson().fromJson(jsonObject.getString(relId), Tag.class);
-//                                    if (tg.tag_out.equals("0")) checkIn(tg.tag_id,tg.parent);
-//                                    today_body.put(relId, new JSONObject(new Gson().toJson(tg, Tag.class)));
-//                                }
 
                                 oldbody.put(today,today_body);
                                 singleton1.setCount(String.valueOf(today_body.names().length()));
@@ -532,6 +574,8 @@ public class Jasonparse {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        refrsh();
     }
 
 

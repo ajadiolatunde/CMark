@@ -218,21 +218,25 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                                             count++;
                                             //obtain tag info
                                             tag =singleton1.getTagtochange();
-                                            System.out.println("Tunde "+regChildtag+" "+realchildid+" "+tag.getTag_in());
 
 
-                                            mPhotoFile = singleton1.getPhotoFile(String.valueOf(tag.getTag_in()));
+
+                                                System.out.println("Tunde " + regChildtag + " " + realchildid + " " + tag.getTag_in());
 
 
-                                            Glide.with(Qrcheckout.this)
-                                                    .load(mPhotoFile+".jpg")
-                                                    .apply(new RequestOptions()
-                                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                                            .centerCrop()
-                                                            .skipMemoryCache(true))
-                                                    .into(imgview);
-                                            savebtn.setVisibility(View.VISIBLE);
-                                            phoneedit.setText(tag.getPhone());
+                                                mPhotoFile = singleton1.getPhotoFile(String.valueOf(tag.getTag_in()));
+
+
+                                                Glide.with(Qrcheckout.this)
+                                                        .load(mPhotoFile + ".jpg")
+                                                        .apply(new RequestOptions()
+                                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                                                .centerCrop()
+                                                                .skipMemoryCache(true))
+                                                        .into(imgview);
+                                                savebtn.setVisibility(View.VISIBLE);
+                                                phoneedit.setText(tag.getPhone());
+
 
 
                                         }else{

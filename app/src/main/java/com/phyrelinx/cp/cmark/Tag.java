@@ -156,4 +156,24 @@ public class Tag implements Serializable{
 
     }
 
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id='" + id + '\'' +
+                ", phone='" + phone + '\'' +
+                ", id_device='" + id_device + '\'' +
+                ", toilet_out='" + toilet_out + '\'' +
+                ", toilet_in='" + toilet_in + '\'' +
+                ", age='" + age + '\'' +
+                ", parent='" + parent + '\'' +
+                ", classroom='" + classroom + '\'' +
+                ", teacher='" + teacher + '\'' +
+                ", tag_in='" + tag_in + '\'' +
+                ", tag_out='" + tag_out + '\'' +
+                ", tag_id='" + tag_id + '\'' +
+                ", status=" + status +
+                ", gender='" + gender + '\'' +
+                ", checkstatus=" + checkstatus +
+                '}';
+    }
 }
