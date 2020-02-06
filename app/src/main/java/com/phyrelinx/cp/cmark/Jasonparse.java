@@ -213,6 +213,31 @@ public class Jasonparse {
         }
         return res;
     }
+
+    public ArrayList<String>  canParentCheckOutlist(String parent){
+        ArrayList<String> res = new ArrayList<>();
+        String data = singleton1.getPrefKey(Constants.CHECKINTABLE);
+        if (data.equals("{}") || data.equals(Constants.CLOSE)){
+
+        }else{
+            try{
+                JSONObject oldbody = new JSONObject(data);
+                Iterator<String> keys = oldbody.keys();
+                while (keys.hasNext()){
+                    String cid = keys.next();
+                    String pid = oldbody.getString(cid);
+                    if (pid.equals(parent)){
+                        res.add( cid);
+
+                    }
+                }
+
+            }catch (JSONException io){
+
+            }
+        }
+        return res;
+    }
     //check if realid already marked attendance
     public boolean canTakeAttendance(String realid){
         boolean status = true;
@@ -274,6 +299,42 @@ public class Jasonparse {
         }
 
         return id;
+
+    }
+
+    public ArrayList<Tag>  getRealId(ArrayList<String> childtagidlist){
+        String data = singleton1.getPrefKey(Constants.ATTENDANCE);
+        String today = CARUtil.getToday();
+        ArrayList<Tag> tagstochange = new ArrayList<>();
+        for (String tagid:childtagidlist) {
+            if (!canUsechildTag(tagid)){
+
+                try {
+                    JSONObject oldbody = new JSONObject(data);
+                    String js = oldbody.get(today).toString();
+                    JSONObject today_body = new JSONObject(js);
+                    Iterator<String> keys = today_body.keys();
+                    while(keys.hasNext()){
+                        String key = keys.next();
+                        Tag tg = new Gson().fromJson(today_body.getString(key),Tag.class);
+                        if (tg.getTag_id().equals(tagid)){
+                            tagstochange.add(tg);
+
+                        }
+
+                    }
+
+
+                }catch (JSONException io){
+                    io.printStackTrace();
+                }
+
+            }
+
+        }
+
+
+        return tagstochange;
 
     }
 

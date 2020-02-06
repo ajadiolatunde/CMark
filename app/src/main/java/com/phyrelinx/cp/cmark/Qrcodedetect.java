@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,8 +51,7 @@ import java.util.List;
  */
 
 public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    TextView barcodeInfo;
-    TextView barcodeInfo2;
+
     SurfaceView cameraView;
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
@@ -71,6 +72,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
     boolean detectagain = true;
     ArrayList<String> listofchild = new ArrayList<>();
     Button readagain;
+    LinearLayout ll;
 
     Singleton1 singleton1;
     ImageButton imgbtn;
@@ -82,6 +84,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.qrcodelayout);
         final Intent intent = getIntent();
+        ll = (LinearLayout)findViewById(R.id.linearlayouy_tagslist);
         Bundle extras = intent.getExtras();
         tsLong = System.currentTimeMillis();
         if (extras != null) {
@@ -127,8 +130,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         boolean canTakePicture =mPhotoFile != null && captureImage.resolveActivity(packageManager)!=null;
 
         cameraView = (SurfaceView)findViewById(R.id.camera_view);
-        barcodeInfo = (TextView)findViewById(R.id.code1_info);
-        barcodeInfo2 = (TextView)findViewById(R.id.code2_info);
+
         savebtn = (Button)findViewById(R.id.saveBtn);
 
         imgview = (ImageView)findViewById(R.id.takepicture);
@@ -159,7 +161,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
 
                         for (String child:listofchild) {
                             if (child.startsWith("C")){
-                                tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1],(String)genderSpinner.getSelectedItem());
+                                tag = new Tag(String.valueOf(tsLong), child, (realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this)+"_"+child:realid, parent, Whoyouutil.getDeviceId(getBaseContext()), session[0], phoneedit.getText().toString(),session[1],(String)genderSpinner.getSelectedItem());
                                 String all = new Gson().toJson(tag,Tag.class);
                                 if (new Jasonparse(getBaseContext()).canTakeAttendance((realid.equals(Constants.SKIP))?Whoyouutil.skipIdevice(tsLong,Qrcodedetect.this):realid)) {
                                     new Jasonparse(getBaseContext()).checkIn(child, parent);
@@ -253,7 +255,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
 
                 if (barcodes.size() != 0 && detectagain) {
                     final MediaPlayer mp = MediaPlayer.create(Qrcodedetect.this, R.raw.ap);
-                    barcodeInfo.post(new Runnable() {    // Use the post method of the TextView
+                    ll.post(new Runnable() {    // Use the post method of the TextView
                         public void run() {
                                 bcode = barcodes.valueAt(0).displayValue;
 
@@ -261,12 +263,13 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
                                     if (bcode.startsWith("C") || bcode.startsWith("P") && !isAdded(bcode)) {
                                         //check if used
                                         if (bcode.startsWith("P") && isNotAvailable() ) {
-                                            barcodeInfo.setText(bcode);
                                             listofchild.add(bcode);
                                             Toast.makeText(getBaseContext(), String.valueOf(listofchild.size()), Toast.LENGTH_SHORT).show();
                                             detectagain = false;
                                             previous = bcode;
                                             parent = bcode;
+                                            addBtn(bcode);
+
                                             mp.start();
                                             readagain.setText("Read again?");
 
@@ -274,11 +277,12 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
                                             if (new Jasonparse(getBaseContext()).canUsechildTag(bcode) && bcode.startsWith("C") && !isAdded(bcode)) {
                                                 mp.start();
                                                 listtostring();
-                                                barcodeInfo2.setText(listtostring());
                                                 listofchild.add(bcode);
                                                 previous = bcode;
                                                 detectagain = false;
                                                 readagain.setText("Read again?");
+                                                addBtn(bcode);
+
 
                                                 Toast.makeText(getBaseContext(), String.valueOf(listofchild.size()), Toast.LENGTH_SHORT).show();
 
@@ -309,6 +313,40 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
 
 
     }
+
+    private void addBtn(final String tagid){
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final Button myButton = new Button(this);
+        myButton.setText(tagid);
+        myButton.setId(listofchild.indexOf(tagid+10));
+        myButton.setPadding(1,2,1,2);
+        myButton.setBackground(getResources().getDrawable(R.drawable.myfirst));
+
+
+        if (tagid.startsWith("P")){
+            myButton.setCompoundDrawables(getBaseContext().getResources().getDrawable(R.drawable.ic_person_black_24dp),null,null,null);
+
+        }else{
+            myButton.setTextColor(getResources().getColor(R.color.aluminum));
+
+            myButton.setCompoundDrawables(getBaseContext().getResources().getDrawable(R.drawable.ic_child_friendly_black_24dp),null,null,null);
+
+        }
+        myButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myButton.setVisibility(View.GONE);
+                listofchild.remove(tagid);
+            }
+        });
+
+
+        ll.addView(myButton, lp);
+
+
+
+
+       }
 
     private  boolean isAdded(String newchild){
         listtostring();

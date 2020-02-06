@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,14 +36,14 @@ import com.google.zxing.qrcode.decoder.QRCodeDecoderMetaData;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by olatunde on 11/10/17.
  */
 
 public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    TextView barcodeInfo;
-    TextView barcodeInfo2;
+
     SurfaceView cameraView;
     BarcodeDetector barcodeDetector;
     CameraSource cameraSource;
@@ -58,18 +59,22 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
     String previous =" ";
     Long tsLong;
     DataModel model;
+    ArrayList<Tag> tagsdueexit;
     int count=0;
+    LinearLayout ll;
+
 
 
     Singleton1 singleton1;
     ImageButton imgbtn;
-    Tag tag;
     Button savebtn;
     Boolean pic_avalable= false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.qrcheckout);
+        ll = (LinearLayout)findViewById(R.id.layouthorizontalout);
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         tsLong = System.currentTimeMillis();
@@ -104,8 +109,6 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
         cameraView = (SurfaceView)findViewById(R.id.camera_view);
         cameraView.requestFocus();
 
-        barcodeInfo = (TextView)findViewById(R.id.code1_info);
-        barcodeInfo2 = (TextView)findViewById(R.id.code2_info);
         savebtn = (Button)findViewById(R.id.saveBtn);
 
         imgview = (ImageView)findViewById(R.id.ttakepicture);
@@ -117,27 +120,30 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
             public void onClick(View v) {
 
                     //Remove from checkin table
+                for (Tag tag:tagsdueexit) {
                     new Jasonparse(getBaseContext()).checkOut(tag.getTag_id());
-                    //update Attendance table
                     tag.setTag_out(String.valueOf(System.currentTimeMillis()));
-
                     new Jasonparse(getBaseContext()).updateAttendnance(tag.getId(), tag, true);
-                    savebtn.setEnabled(false);
-                    if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
+
+
+                }
+
+                savebtn.setEnabled(false);
+                if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
                         if (mPhotoFile.exists())mPhotoFile.delete();
                         cameraSource.release();
                         cameraSource.stop();
                         Intent intent1 = new Intent(Qrcheckout.this, MainActivity.class);
                         startActivity(intent1);
                         finish();
-                    }else{
+                }else{
                         if (mPhotoFile.exists())mPhotoFile.delete();
                         cameraSource.stop();
 
-                        Intent intent1 = new Intent(Qrcheckout.this, ManageUser.class);
+                        Intent intent1 = new Intent(Qrcheckout.this, MainActivity.class);
                         startActivity(intent1);
                         finish();
-                    }
+                }
 
             }
         });
@@ -197,45 +203,46 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
 
                 if (barcodes.size() != 0) {
                     final MediaPlayer mp = MediaPlayer.create(Qrcheckout.this, R.raw.ap);
-                    barcodeInfo.post(new Runnable() {    // Use the post method of the TextView
+                    ll.post(new Runnable() {    // Use the post method of the TextView
                         public void run() {
                                 bcode = barcodes.valueAt(0).displayValue;
 
                             if (!bcode.equals(previous)) {
                                     if (bcode.startsWith("P")&& !parent.startsWith("P")) {
-                                        String res = new Jasonparse(getBaseContext()).canParentCheckOut(bcode);
-                                        if (!res.equals("0")) {
+//                                        check if parent in checkin table
+                                        ArrayList<String> listofChildtag = new Jasonparse(getBaseContext()).canParentCheckOutlist(bcode);
+//                                        barcodeInfo2.setText(" :"+String.valueOf(listofChildtag.size()));
+
+                                        if (listofChildtag.size()>0) {
                                             parent = bcode;
-                                            barcodeInfo.setText(parent);
+//                                            barcodeInfo.setText(parent);
                                             mp.start();
                                             previous = bcode;
                                             bcode = " ";
-                                            regChildtag =res;
 
-                                            String realchildid = new Jasonparse(getBaseContext()).getRealId(regChildtag);
-                                            System.out.println("Tunde "+regChildtag+" "+realchildid+" "+res);
+                                            tagsdueexit = new Jasonparse(getBaseContext()).getRealId(listofChildtag);
+                                            System.out.println("Tunde size of keys to change"+tagsdueexit.size());
+                                            for (Tag t:tagsdueexit) {
+                                                addBtn(t);
+                                            };
 
                                             count++;
                                             //obtain tag info
-                                            tag =singleton1.getTagtochange();
+                                            Tag tag =tagsdueexit.get(0);
+
+                                            mPhotoFile = singleton1.getPhotoFile(String.valueOf(tag.getTag_in()));
 
 
+                                            Glide.with(Qrcheckout.this)
+                                                    .load(mPhotoFile + ".jpg")
+                                                    .apply(new RequestOptions()
+                                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                                            .centerCrop()
+                                                            .skipMemoryCache(true))
+                                                    .into(imgview);
+                                            savebtn.setVisibility(View.VISIBLE);
 
-                                                System.out.println("Tunde " + regChildtag + " " + realchildid + " " + tag.getTag_in());
-
-
-                                                mPhotoFile = singleton1.getPhotoFile(String.valueOf(tag.getTag_in()));
-
-
-                                                Glide.with(Qrcheckout.this)
-                                                        .load(mPhotoFile + ".jpg")
-                                                        .apply(new RequestOptions()
-                                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                                                .centerCrop()
-                                                                .skipMemoryCache(true))
-                                                        .into(imgview);
-                                                savebtn.setVisibility(View.VISIBLE);
-                                                phoneedit.setText(tag.getPhone());
+                                            phoneedit.setText(tag.getPhone());
 
 
 
@@ -245,36 +252,9 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                                         }
                                     }
                                     previous = bcode;
-                                    //Ensure p is loaded first
-                                    if (bcode.startsWith("C") && !child.startsWith("C")&& parent.startsWith("P")) {
-                                        //check if used
-                                        mp.start();
-                                        previous = bcode;
-                                        if (bcode.equals(regChildtag)) {
-                                            child = bcode;
 
-                                            mp.start();
-                                            barcodeInfo2.setText(child);
-
-                                            bcode = " ";
-                                            phoneedit.setText(tag.getPhone());
-
-                                            count++;
-                                            if (new Jasonparse(getBaseContext()).tagExistinToilet(child)){
-                                                Toast.makeText(getBaseContext(), "Your child still in toilet", Toast.LENGTH_SHORT).show();
-
-                                            }else {
-                                                Toast.makeText(getBaseContext(), "Match found!", Toast.LENGTH_SHORT).show();
-                                                savebtn.setVisibility(View.VISIBLE);
-                                            }
-
-
-                                        }else{
-                                            Toast.makeText(getBaseContext(),"Wrong tag!",Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
                                 }
-                                if (count==2){
+                                if (count==1){
                                    // bcode = previous;
 
                                     barcodeDetector.release();
@@ -304,6 +284,41 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
             //phyLocation.setPhoto("Yes");
             upDatePhotoView();
         }
+    }
+
+
+    private void addBtn(final Tag tag){
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        final Button myButton = new Button(this);
+        myButton.setText(tag.getTag_id());
+        myButton.setId(tagsdueexit.indexOf(tag));
+        myButton.setPadding(1,2,1,2);
+        myButton.setBackground(getResources().getDrawable(R.drawable.myfirst));
+
+
+        if (tag.tag_id.startsWith("P")){
+            myButton.setCompoundDrawables(getBaseContext().getResources().getDrawable(R.drawable.ic_person_black_24dp),null,null,null);
+
+        }else{
+            myButton.setTextColor(getResources().getColor(R.color.aluminum));
+
+            myButton.setCompoundDrawables(getBaseContext().getResources().getDrawable(R.drawable.ic_child_friendly_black_24dp),null,null,null);
+
+        }
+        myButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myButton.setVisibility(View.GONE);
+//                listofchild.remove(tagid);
+            }
+        });
+
+
+        ll.addView(myButton, lp);
+
+
+
+
     }
 
     private  void upDatePhotoView(){

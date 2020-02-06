@@ -27,29 +27,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="match_parent"
+            android:scrollbars="horizontal"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/layouthorizontalout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_person_black_24dp"
-                android:padding="4dp"
-                android:layout_weight="1"
-                android:text="Parent" />
+                android:orientation="horizontal">
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/code1_info"
-                android:layout_weight="1"
-                android:textColor="@color/colorAccent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                />
-        </LinearLayout>
+        </HorizontalScrollView>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
