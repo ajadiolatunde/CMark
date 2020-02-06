@@ -84,7 +84,7 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.qrcodelayout);
         final Intent intent = getIntent();
-        ll = (LinearLayout)findViewById(R.id.linearlayouy_tagslist);
+        ll = (LinearLayout)findViewById(R.id.layouthorizontalin);
         Bundle extras = intent.getExtras();
         tsLong = System.currentTimeMillis();
         if (extras != null) {
@@ -288,7 +288,12 @@ public class Qrcodedetect extends AppCompatActivity implements ActivityCompat.On
 
 
                                             } else {
-                                                Toast.makeText(getBaseContext(), (bcode.startsWith("C"))?"Tag is used already!":"", Toast.LENGTH_SHORT).show();
+                                                if (isAdded(bcode)){
+                                                    Toast.makeText(getBaseContext(), (bcode.startsWith("C")) ? "Already marked!" : "", Toast.LENGTH_SHORT).show();
+
+                                                }else {
+                                                    Toast.makeText(getBaseContext(), (bcode.startsWith("C")) ? "Tag is used already!" : "", Toast.LENGTH_SHORT).show();
+                                                }
                                             }
                                         }
                                     }

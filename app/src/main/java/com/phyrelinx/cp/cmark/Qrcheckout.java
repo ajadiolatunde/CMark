@@ -62,6 +62,7 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
     ArrayList<Tag> tagsdueexit;
     int count=0;
     LinearLayout ll;
+    boolean detectagain = true;
 
 
 
@@ -128,7 +129,6 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
 
                 }
 
-                savebtn.setEnabled(false);
                 if (new Jasonparse(getBaseContext()).getMode().equals(Constants.MODE_AF)) {
                         if (mPhotoFile.exists())mPhotoFile.delete();
                         cameraSource.release();
@@ -138,11 +138,14 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                         finish();
                 }else{
                         if (mPhotoFile.exists())mPhotoFile.delete();
-                        cameraSource.stop();
+                        detectagain = true;
+                        savebtn.setVisibility(View.GONE);
+                        phoneedit.setText(" ");
+                        ll.removeAllViewsInLayout();
+                        imgview.setImageDrawable(getResources().getDrawable(R.drawable.ic_person_black_24dp));
 
-                        Intent intent1 = new Intent(Qrcheckout.this, MainActivity.class);
-                        startActivity(intent1);
-                        finish();
+
+
                 }
 
             }
@@ -201,14 +204,14 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
 
-                if (barcodes.size() != 0) {
+                if (barcodes.size() != 0 && detectagain) {
                     final MediaPlayer mp = MediaPlayer.create(Qrcheckout.this, R.raw.ap);
                     ll.post(new Runnable() {    // Use the post method of the TextView
                         public void run() {
                                 bcode = barcodes.valueAt(0).displayValue;
 
                             if (!bcode.equals(previous)) {
-                                    if (bcode.startsWith("P")&& !parent.startsWith("P")) {
+                                    if (bcode.startsWith("P")) {
 //                                        check if parent in checkin table
                                         ArrayList<String> listofChildtag = new Jasonparse(getBaseContext()).canParentCheckOutlist(bcode);
 //                                        barcodeInfo2.setText(" :"+String.valueOf(listofChildtag.size()));
@@ -231,6 +234,7 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                                             Tag tag =tagsdueexit.get(0);
 
                                             mPhotoFile = singleton1.getPhotoFile(String.valueOf(tag.getTag_in()));
+                                            detectagain = false;
 
 
                                             Glide.with(Qrcheckout.this)
@@ -254,13 +258,7 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
                                     previous = bcode;
 
                                 }
-                                if (count==1){
-                                   // bcode = previous;
 
-                                    barcodeDetector.release();
-                                    //enable save
-
-                                }
 
                         }
                     });
@@ -360,7 +358,10 @@ public class Qrcheckout extends AppCompatActivity implements ActivityCompat.OnRe
 
     @Override
     public void onBackPressed() {
+//        cameraSource.release();
+//        barcodeDetector.release();
         Intent intent=new Intent(Qrcheckout.this, MainActivity.class);
+
         startActivity(intent);
         finish();
 
